@@ -4,3 +4,4 @@ export const USERS_URL = '/api/users';
 export const ORDERS_URL = '/api/orders';
 export const KNOWLEDGE_URL = '/api/knowledge';
 export const UPLOAD_URL = '/api/upload';
+export const RAZORPAY_URL = '/api/razorpay';

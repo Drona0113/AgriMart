@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 const __dirname = path.resolve();
-dotenv.config({ path: path.join(__dirname, 'backend', '.env') });
+dotenv.config();
 
 import users from './data/users.js';
 import products from './data/products.js';
@@ -14,10 +14,11 @@ import Order from './models/orderModel.js';
 import Knowledge from './models/knowledgeModel.js';
 import connectDB from './config/db.js';
 
-connectDB();
-
 const importData = async () => {
   try {
+    // Wait for connection to be established before doing anything
+    await connectDB();
+    
     console.log('Deleting existing data...');
     await Order.deleteMany();
     await Product.deleteMany();
@@ -55,6 +56,7 @@ const importData = async () => {
 
 const destroyData = async () => {
   try {
+    await connectDB();
     await Order.deleteMany();
     await Product.deleteMany();
     await User.deleteMany();

@@ -27,7 +27,11 @@ const PlaceOrderPage = () => {
   const placeOrderHandler = async () => {
     try {
       const res = await createOrder({
-        orderItems: cart.cartItems,
+        orderItems: cart.cartItems.map((item) => ({
+          ...item,
+          product: item._id,
+          _id: undefined,
+        })),
         shippingAddress: cart.shippingAddress,
         paymentMethod: cart.paymentMethod,
         itemsPrice: cart.itemsPrice,

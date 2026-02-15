@@ -10,6 +10,7 @@ import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import knowledgeRoutes from './routes/knowledgeRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import razorpayRoutes from './routes/razorpayRoutes.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/knowledge', knowledgeRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/razorpay', razorpayRoutes);
 
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));

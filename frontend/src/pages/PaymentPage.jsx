@@ -7,7 +7,7 @@ import CheckoutSteps from '../components/CheckoutSteps';
 import { CreditCard, Wallet, Banknote } from 'lucide-react';
 
 const PaymentPage = () => {
-  const [paymentMethod, setPaymentMethod] = useState('PayPal');
+  const [paymentMethod, setPaymentMethod] = useState('Razorpay');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -45,8 +45,8 @@ const PaymentPage = () => {
                 type='radio'
                 className='w-5 h-5 text-primary-600 focus:ring-primary-500'
                 name='paymentMethod'
-                value='PayPal'
-                checked={paymentMethod === 'PayPal'}
+                value='Razorpay'
+                checked={paymentMethod === 'Razorpay'}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
               <div className='ml-4 flex items-center gap-3'>
@@ -54,7 +54,7 @@ const PaymentPage = () => {
                   <Wallet size={20} className='text-blue-600' />
                 </div>
                 <div>
-                  <p className='font-bold text-gray-900'>PayPal or Credit Card</p>
+                  <p className='font-bold text-gray-900'>Razorpay (UPI, Cards, Wallet)</p>
                   <p className='text-xs text-gray-500'>Safe and secure online payment</p>
                 </div>
               </div>

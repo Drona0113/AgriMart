@@ -7,6 +7,7 @@ const users = [
     mobile: '9876543210',
     password: 'password123',
     isAdmin: true,
+    isVerified: true,
   },
   {
     name: 'Farmer John',
@@ -14,6 +15,7 @@ const users = [
     mobile: '9876543211',
     password: 'password123',
     isAdmin: false,
+    isVerified: true,
     farmDetails: {
       farmSize: '5 Acres',
       cropTypes: ['Wheat', 'Rice'],

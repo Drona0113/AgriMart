@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
@@ -9,10 +9,17 @@ import {
   usePayOrderMutation,
   useDeliverOrderMutation,
 } from '../slices/ordersApiSlice';
+import {
+  useGetRazorpayKeyQuery,
+  useCreateRazorpayOrderMutation,
+  useVerifyRazorpayPaymentMutation,
+} from '../slices/razorpayApiSlice';
+import MockPaymentModal from '../components/MockPaymentModal';
 import { MapPin, CreditCard, ShoppingBag, CheckCircle2, Clock, Truck } from 'lucide-react';
 
 const OrderPage = () => {
   const { id: orderId } = useParams();
+  const [showMockPayment, setShowMockPayment] = useState(false);
 
   const {
     data: order,
@@ -23,6 +30,10 @@ const OrderPage = () => {
 
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
   const [deliverOrder, { isLoading: loadingDeliver }] = useDeliverOrderMutation();
+
+  const { data: razorpayKey } = useGetRazorpayKeyQuery();
+  const [createRazorpayOrder] = useCreateRazorpayOrderMutation();
+  const [verifyRazorpayPayment] = useVerifyRazorpayPaymentMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -36,12 +47,67 @@ const OrderPage = () => {
     }
   };
 
-  // For demo purposes, a simple pay handler
-  const payHandler = async () => {
+  const handleMockSuccess = async () => {
     try {
-      await payOrder({ orderId, details: { id: 'DEMO_PAYMENT_ID', status: 'COMPLETED', update_time: new Date().toISOString(), payer: { email_address: userInfo.email } } });
+      await verifyRazorpayPayment({
+        razorpay_order_id: `mock_order_${Date.now()}`,
+        razorpay_payment_id: `mock_payment_${Date.now()}`,
+        razorpay_signature: 'mock_signature',
+        orderId: order._id,
+      }).unwrap();
       refetch();
-      toast.success('Payment successful');
+      toast.success('Payment Successful (Simulated)!');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
+  const handleRazorpayPayment = async () => {
+    try {
+      if (!razorpayKey) {
+        toast.error('Razorpay SDK failed to load');
+        return;
+      }
+
+      // Mock Payment Logic for Student Project
+      if (razorpayKey.key.startsWith('mock_')) {
+        setShowMockPayment(true);
+        return;
+      }
+
+      const orderData = await createRazorpayOrder({ amount: order.totalPrice }).unwrap();
+
+      const options = {
+        key: razorpayKey.key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'AgriMart',
+        description: `Order #${order._id}`,
+        image: 'https://cdn-icons-png.flaticon.com/512/609/609803.png', // Agriculture icon
+        order_id: orderData.id,
+        handler: async function (response) {
+          try {
+            await verifyRazorpayPayment({
+              ...response,
+              orderId: order._id,
+            }).unwrap();
+            refetch();
+            toast.success('Payment Successful!');
+          } catch (err) {
+            toast.error('Payment Verification Failed');
+          }
+        },
+        prefill: {
+          name: userInfo.name,
+          email: userInfo.email,
+        },
+        theme: {
+          color: '#16a34a',
+        },
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -181,14 +247,13 @@ const OrderPage = () => {
               </div>
             </div>
 
-            {/* Payment Button (for demo/farmer-friendly simple pay) */}
+            {/* Payment Button */}
             {!order.isPaid && (
               <button
-                onClick={payHandler}
-                disabled={loadingPay}
+                onClick={handleRazorpayPayment}
                 className='w-full btn-primary py-4 rounded-xl font-bold mb-4 shadow-lg shadow-primary-200'
               >
-                {loadingPay ? <Loader /> : 'Pay Now (Demo)'}
+                Pay with Razorpay
               </button>
             )}
 
@@ -206,6 +271,12 @@ const OrderPage = () => {
           </div>
         </div>
       </div>
+      <MockPaymentModal
+        isOpen={showMockPayment}
+        onClose={() => setShowMockPayment(false)}
+        onSuccess={handleMockSuccess}
+        amount={order.totalPrice}
+      />
     </div>
   );
 };
