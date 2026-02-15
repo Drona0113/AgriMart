@@ -34,6 +34,10 @@ const ProductPage = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const addToCartHandler = () => {
+    if (!userInfo) {
+      navigate(`/login?redirect=/product/${productId}`);
+      return;
+    }
     dispatch(addToCart({ ...product, qty }));
     navigate('/cart');
   };

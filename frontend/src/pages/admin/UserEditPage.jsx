@@ -15,6 +15,9 @@ const UserEditPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isFarmer, setIsFarmer] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [govtId, setGovtId] = useState('');
 
   const {
     data: user,
@@ -32,13 +35,16 @@ const UserEditPage = () => {
       setName(user.name);
       setEmail(user.email);
       setIsAdmin(user.isAdmin);
+      setIsFarmer(user.isFarmer);
+      setIsVerified(user.isVerified);
+      setGovtId(user.govtId || '');
     }
   }, [user]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      await updateUser({ userId, name, email, isAdmin });
+      await updateUser({ userId, name, email, isAdmin, isFarmer, isVerified, govtId });
       toast.success('User updated successfully');
       refetch();
       navigate('/admin/userlist');
@@ -116,6 +122,51 @@ const UserEditPage = () => {
                 <label htmlFor='isAdmin' className='flex items-center gap-2 font-bold text-gray-700 cursor-pointer'>
                   <Shield size={18} className='text-primary-600' />
                   Grant Administrator Privileges
+                </label>
+              </div>
+
+              {/* Is Farmer */}
+              <div className='flex items-center gap-3 p-6 bg-gray-50 rounded-2xl border border-gray-100'>
+                <input
+                  type='checkbox'
+                  id='isFarmer'
+                  checked={isFarmer}
+                  onChange={(e) => setIsFarmer(e.target.checked)}
+                  className='w-6 h-6 rounded-lg border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer'
+                />
+                <label htmlFor='isFarmer' className='flex items-center gap-2 font-bold text-gray-700 cursor-pointer'>
+                  <UserIcon size={18} className='text-primary-600' />
+                  Farmer Role
+                </label>
+              </div>
+
+              {/* Govt ID */}
+              <div>
+                <label className='block text-sm font-bold text-gray-700 mb-2'>Government Farmer ID</label>
+                <div className='relative'>
+                  <Shield className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
+                  <input
+                    type='text'
+                    placeholder='Enter Govt ID'
+                    value={govtId}
+                    onChange={(e) => setGovtId(e.target.value)}
+                    className='w-full pl-11 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50/30 transition-all'
+                  />
+                </div>
+              </div>
+
+              {/* Is Verified */}
+              <div className='flex items-center gap-3 p-6 bg-gray-50 rounded-2xl border border-gray-100'>
+                <input
+                  type='checkbox'
+                  id='isVerified'
+                  checked={isVerified}
+                  onChange={(e) => setIsVerified(e.target.checked)}
+                  className='w-6 h-6 rounded-lg border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer'
+                />
+                <label htmlFor='isVerified' className='flex items-center gap-2 font-bold text-gray-700 cursor-pointer'>
+                  <Shield size={18} className='text-green-600' />
+                  Verify User (Approved Farmer)
                 </label>
               </div>
 

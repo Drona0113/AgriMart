@@ -67,6 +67,12 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Farmer
 const createProduct = asyncHandler(async (req, res) => {
+  // Check if user is verified
+  if (!req.user.isVerified) {
+    res.status(403);
+    throw new Error('Farmer verification pending. You cannot add products yet.');
+  }
+
   const product = new Product({
     name: 'Sample name',
     price: 0,

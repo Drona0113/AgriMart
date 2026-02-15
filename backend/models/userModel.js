@@ -31,6 +31,23 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    govtId: {
+      type: String,
+      default: null,
+      validate: {
+        validator: function (v) {
+          // If no ID is provided (null/undefined), it's valid (for regular users)
+          if (!v) return true;
+          // If ID is provided, it must be alphanumeric and between 10-16 characters
+          return /^[A-Z0-9]{10,16}$/i.test(v);
+        },
+        message: (props) => `${props.value} is not a valid Government ID format! Must be 10-16 alphanumeric characters.`,
+      },
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
     farmDetails: {
       farmSize: String,
       cropTypes: [String],

@@ -5,6 +5,13 @@ import Order from '../models/orderModel.js';
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
+  // Check if user is verified
+  // We only restrict regular users/farmers. Admins are exempt.
+  if (!req.user.isAdmin && !req.user.isVerified) {
+    res.status(403);
+    throw new Error('Identity verification required. Only verified farmers can purchase agricultural products.');
+  }
+
   const {
     orderItems,
     shippingAddress,

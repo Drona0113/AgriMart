@@ -43,3 +43,60 @@ body {
 @utility card {
   @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-100;
 }
+
+/* Hide Google Translate Banner */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+}
+
+/* Hide the tooltip on hover */
+.goog-tooltip {
+  display: none !important;
+}
+.goog-tooltip:hover {
+  display: none !important;
+}
+.goog-text-highlight {
+  background-color: transparent !important;
+  border: none !important; 
+  box-shadow: none !important;
+}
+
+/* Hide Google Translate Bar */
+iframe.goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  position: static !important;
+  top: 0px !important;
+}
+
+/* Force hide banner frame */
+.goog-te-banner-frame {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+}
+
+/* Hide top padding added by google */
+html, body {
+  top: 0 !important;
+  margin-top: 0 !important;
+  position: relative !important;
+  min-height: 100% !important;
+  height: auto !important;
+}
+
+#goog-gt-tt, .goog-te-balloon-frame {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}

@@ -13,7 +13,8 @@ const ShippingPage = () => {
   const [address, setAddress] = useState(shippingAddress.address || '');
   const [city, setCity] = useState(shippingAddress.city || '');
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
-  const [country, setCountry] = useState(shippingAddress.country || '');
+  const [country, setCountry] = useState(shippingAddress.country || 'India');
+  const [stateName, setStateName] = useState(shippingAddress.state || 'Andhra Pradesh');
   const [village, setVillage] = useState(shippingAddress.village || '');
   const [landmark, setLandmark] = useState(shippingAddress.landmark || '');
 
@@ -22,7 +23,7 @@ const ShippingPage = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(saveShippingAddress({ address, city, postalCode, country, village, landmark }));
+    dispatch(saveShippingAddress({ address, city, postalCode, country, state: stateName, village, landmark }));
     navigate('/payment');
   };
 
@@ -54,7 +55,7 @@ const ShippingPage = () => {
 
           <div>
             <label className='block text-sm font-bold text-gray-700 mb-2'>
-              Full Address
+              Address
             </label>
             <input
               type='text'
@@ -108,21 +109,36 @@ const ShippingPage = () => {
             />
           </div>
 
-          <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
-              Country
-            </label>
-            <input
-              type='text'
-              className='w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500'
-              placeholder='Enter country'
-              value={country}
-              required
-              onChange={(e) => setCountry(e.target.value)}
-            />
+          <div className='grid grid-cols-2 gap-4'>
+            <div>
+              <label className='block text-sm font-bold text-gray-700 mb-2'>
+                State
+              </label>
+              <input
+                type='text'
+                className='w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed'
+                value={stateName}
+                readOnly
+              />
+              <p className='text-xs text-primary-600 mt-1 font-medium'>* Service available only in Andhra Pradesh</p>
+            </div>
+            <div>
+              <label className='block text-sm font-bold text-gray-700 mb-2'>
+                Country
+              </label>
+              <input
+                type='text'
+                className='w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed'
+                value={country}
+                readOnly
+              />
+            </div>
           </div>
 
-          <button type='submit' className='w-full btn-primary py-4 mt-4'>
+          <button
+            type='submit'
+            className='w-full bg-primary-600 text-white py-3 rounded-xl font-bold text-lg hover:bg-primary-700 transition-colors shadow-lg shadow-primary-200'
+          >
             Continue to Payment
           </button>
         </form>

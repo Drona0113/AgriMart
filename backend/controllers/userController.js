@@ -17,6 +17,9 @@ const authUser = asyncHandler(async (req, res) => {
       email: user.email,
       mobile: user.mobile,
       isAdmin: user.isAdmin,
+      isFarmer: user.isFarmer,
+      isVerified: user.isVerified,
+      govtId: user.govtId,
       token: generateToken(user._id),
     });
   } else {
@@ -29,7 +32,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, mobile, password } = req.body;
+  const { name, email, mobile, password, govtId } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -38,11 +41,23 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User already exists');
   }
 
+  // If govtId is provided, mark as farmer but pending verification
+  const isFarmer = govtId ? true : false;
+  // In a real app, isVerified would be false until Admin approves.
+  // For this prototype, we'll auto-verify if ID is provided, 
+  // OR we can leave it as false and let Admin verify.
+  // The user asked "how can we evaluate them?", implying a check is needed.
+  // Let's set isVerified to false initially if govtId is present.
+  const isVerified = false; 
+
   const user = await User.create({
     name,
     email,
     mobile,
     password,
+    govtId,
+    isFarmer,
+    isVerified
   });
 
   if (user) {
@@ -52,6 +67,9 @@ const registerUser = asyncHandler(async (req, res) => {
       email: user.email,
       mobile: user.mobile,
       isAdmin: user.isAdmin,
+      isFarmer: user.isFarmer,
+      isVerified: user.isVerified,
+      govtId: user.govtId,
       token: generateToken(user._id),
     });
   } else {
@@ -106,6 +124,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       email: updatedUser.email,
       mobile: updatedUser.mobile,
       isAdmin: updatedUser.isAdmin,
+      isFarmer: updatedUser.isFarmer,
+      isVerified: updatedUser.isVerified,
+      govtId: updatedUser.govtId,
       token: generateToken(updatedUser._id),
     });
   } else {
@@ -160,7 +181,10 @@ const updateUser = asyncHandler(async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-    user.isAdmin = req.body.isAdmin;
+    user.isAdmin = Boolean(req.body.isAdmin);
+    user.isFarmer = Boolean(req.body.isFarmer);
+    user.isVerified = Boolean(req.body.isVerified);
+    user.govtId = req.body.govtId || user.govtId;
 
     const updatedUser = await user.save();
 
@@ -169,6 +193,9 @@ const updateUser = asyncHandler(async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       isAdmin: updatedUser.isAdmin,
+      isFarmer: updatedUser.isFarmer,
+      isVerified: updatedUser.isVerified,
+      govtId: updatedUser.govtId,
     });
   } else {
     res.status(404);

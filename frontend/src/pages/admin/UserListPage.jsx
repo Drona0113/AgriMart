@@ -33,7 +33,7 @@ const UserListPage = () => {
         </div>
         <div>
           <h1 className='text-4xl font-black text-gray-900'>User Management</h1>
-          <p className='text-gray-500 font-medium'>Manage registered users and their permissions</p>
+          <p className='text-gray-500 font-medium'>Manage registered users and verify farmers (Sachivalayam Volunteer)</p>
         </div>
       </div>
 
@@ -52,8 +52,8 @@ const UserListPage = () => {
                 <tr className='bg-gray-50/50 border-b border-gray-100'>
                   <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>User</th>
                   <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Email</th>
-                  <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Admin Status</th>
-                  <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>ID</th>
+                  <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Roles</th>
+                  <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Verification</th>
                   <th className='px-8 py-6'></th>
                 </tr>
               </thead>
@@ -77,18 +77,43 @@ const UserListPage = () => {
                       </div>
                     </td>
                     <td className='px-8 py-6'>
-                      {user.isAdmin ? (
-                        <div className='inline-flex items-center gap-1.5 bg-green-50 text-green-600 px-3 py-1.5 rounded-full font-bold text-sm'>
-                          <Shield size={14} /> Administrator
+                      <div className='flex flex-col gap-2'>
+                        {user.isAdmin && (
+                          <div className='inline-flex items-center gap-1.5 bg-purple-50 text-purple-600 px-3 py-1.5 rounded-full font-bold text-xs w-fit'>
+                            <Shield size={12} /> ADMIN
+                          </div>
+                        )}
+                        {user.isFarmer && (
+                          <div className='inline-flex items-center gap-1.5 bg-green-50 text-green-600 px-3 py-1.5 rounded-full font-bold text-xs w-fit'>
+                            <UserIcon size={12} /> FARMER
+                          </div>
+                        )}
+                        {!user.isAdmin && !user.isFarmer && (
+                          <div className='inline-flex items-center gap-1.5 bg-gray-50 text-gray-500 px-3 py-1.5 rounded-full font-bold text-xs w-fit'>
+                            <UserIcon size={12} /> USER
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className='px-8 py-6'>
+                      {user.govtId ? (
+                        <div className='flex flex-col gap-1'>
+                          <span className='font-mono text-xs bg-gray-100 px-2 py-1 rounded text-gray-600 w-fit'>
+                            ID: {user.govtId}
+                          </span>
+                          {user.isVerified ? (
+                            <span className='text-green-600 text-xs font-bold flex items-center gap-1'>
+                              <CheckCircle size={12} /> Verified
+                            </span>
+                          ) : (
+                            <span className='text-amber-500 text-xs font-bold flex items-center gap-1 animate-pulse'>
+                              <XCircle size={12} /> Pending Approval
+                            </span>
+                          )}
                         </div>
                       ) : (
-                        <div className='inline-flex items-center gap-1.5 bg-gray-50 text-gray-500 px-3 py-1.5 rounded-full font-bold text-sm'>
-                          <UserIcon size={14} /> Farmer/User
-                        </div>
+                        <span className='text-gray-400 text-xs italic'>No ID Provided</span>
                       )}
-                    </td>
-                    <td className='px-8 py-6 font-mono text-xs text-gray-400'>
-                      {user._id}
                     </td>
                     <td className='px-8 py-6 text-right'>
                       <div className='flex items-center justify-end gap-2'>

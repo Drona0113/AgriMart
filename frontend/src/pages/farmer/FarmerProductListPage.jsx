@@ -40,6 +40,10 @@ const FarmerProductListPage = () => {
     useCreateProductMutation();
 
   const createProductHandler = async () => {
+    if (!userInfo.isVerified) {
+      toast.error('You must be a verified farmer to add products. Please wait for admin approval.');
+      return;
+    }
     if (window.confirm('Are you sure you want to create a new product?')) {
       try {
         const res = await createProduct().unwrap();
@@ -65,12 +69,22 @@ const FarmerProductListPage = () => {
           </div>
         </div>
 
-        <button
-          onClick={createProductHandler}
-          className='inline-flex items-center gap-2 bg-green-600 text-white px-6 py-4 rounded-2xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200'
-        >
-          <Plus size={20} /> Add New Product
-        </button>
+        {userInfo.isVerified ? (
+          <button
+            onClick={createProductHandler}
+            className='inline-flex items-center gap-2 bg-green-600 text-white px-6 py-4 rounded-2xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200'
+          >
+            <Plus size={20} /> Add New Product
+          </button>
+        ) : (
+          <div className='bg-yellow-50 text-yellow-800 px-4 py-3 rounded-xl border border-yellow-200 flex items-center gap-2'>
+            <span className='font-bold text-2xl'>⏳</span>
+            <div>
+              <p className='font-bold'>Verification Pending</p>
+              <p className='text-sm'>Waiting for Village Volunteer approval to enable selling.</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {(loadingCreate || loadingDelete) && <Loader />}

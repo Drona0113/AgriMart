@@ -58,7 +58,7 @@ const PlaceOrderPage = () => {
             <div className='text-gray-600 space-y-1'>
               <p className='font-bold text-gray-800'>Delivery to:</p>
               <p>{cart.shippingAddress.village}, {cart.shippingAddress.address}</p>
-              <p>{cart.shippingAddress.city} {cart.shippingAddress.postalCode}</p>
+              <p>{cart.shippingAddress.city}, {cart.shippingAddress.state} {cart.shippingAddress.postalCode}</p>
               <p>{cart.shippingAddress.country}</p>
               {cart.shippingAddress.landmark && (
                 <p className='text-sm italic'>Landmark: {cart.shippingAddress.landmark}</p>

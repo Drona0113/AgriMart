@@ -84,7 +84,7 @@ const OrderPage = () => {
               <div className='text-gray-600'>
                 <p className='font-bold text-gray-800 mb-1'>Address:</p>
                 <p>{order.shippingAddress.village}, {order.shippingAddress.address}</p>
-                <p>{order.shippingAddress.city} {order.shippingAddress.postalCode}</p>
+                <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}</p>
                 <p>{order.shippingAddress.country}</p>
               </div>
               {order.isDelivered ? (
