@@ -31,6 +31,11 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    isSupplier: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     govtId: {
       type: String,
       default: null,
@@ -47,6 +52,9 @@ const userSchema = mongoose.Schema(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    image: {
+      type: String,
     },
     farmDetails: {
       farmSize: String,

@@ -33,7 +33,7 @@ const UserListPage = () => {
         </div>
         <div>
           <h1 className='text-4xl font-black text-gray-900'>User Management</h1>
-          <p className='text-gray-500 font-medium'>Manage registered users and verify farmers (Sachivalayam Volunteer)</p>
+          <p className='text-gray-500 font-medium'>Manage registered users and verify sellers (Sachivalayam Volunteer)</p>
         </div>
       </div>
 
@@ -88,7 +88,12 @@ const UserListPage = () => {
                             <UserIcon size={12} /> FARMER
                           </div>
                         )}
-                        {!user.isAdmin && !user.isFarmer && (
+                        {user.isSupplier && (
+                          <div className='inline-flex items-center gap-1.5 bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full font-bold text-xs w-fit'>
+                            <UserIcon size={12} /> SUPPLIER
+                          </div>
+                        )}
+                        {!user.isAdmin && !user.isFarmer && !user.isSupplier && (
                           <div className='inline-flex items-center gap-1.5 bg-gray-50 text-gray-500 px-3 py-1.5 rounded-full font-bold text-xs w-fit'>
                             <UserIcon size={12} /> USER
                           </div>

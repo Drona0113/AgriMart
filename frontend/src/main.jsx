@@ -35,6 +35,7 @@ import KnowledgeListPage from './pages/admin/KnowledgeListPage';
 import KnowledgeEditPage from './pages/admin/KnowledgeEditPage';
 import FarmerProductListPage from './pages/farmer/FarmerProductListPage';
 import FarmerProductEditPage from './pages/farmer/FarmerProductEditPage';
+import FarmerOrderListPage from './pages/farmer/FarmerOrderListPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -82,6 +83,7 @@ const router = createBrowserRouter(
 
       {/* Farmer users */}
       <Route path='' element={<FarmerRoute />}>
+        <Route path='/farmer/orderlist' element={<FarmerOrderListPage />} />
         <Route path='/farmer/productlist' element={<FarmerProductListPage />} />
         <Route
           path='/farmer/productlist/:pageNumber'

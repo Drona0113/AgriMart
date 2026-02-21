@@ -18,9 +18,13 @@ const authUser = asyncHandler(async (req, res) => {
       mobile: user.mobile,
       isAdmin: user.isAdmin,
       isFarmer: user.isFarmer,
+      isSupplier: user.isSupplier,
       isVerified: user.isVerified,
       govtId: user.govtId,
       token: generateToken(user._id),
+      farmDetails: user.farmDetails,
+      address: user.address,
+      image: user.image,
     });
   } else {
     res.status(401);
@@ -32,7 +36,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, mobile, password, govtId } = req.body;
+  const { name, email, mobile, password, govtId, isSupplier } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -41,13 +45,13 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User already exists');
   }
 
-  // If govtId is provided, mark as farmer but pending verification
-  const isFarmer = govtId ? true : false;
-  // In a real app, isVerified would be false until Admin approves.
-  // For this prototype, we'll auto-verify if ID is provided, 
-  // OR we can leave it as false and let Admin verify.
-  // The user asked "how can we evaluate them?", implying a check is needed.
-  // Let's set isVerified to false initially if govtId is present.
+  // Logic:
+  // If isSupplier is true, mark as supplier.
+  // Else if govtId is provided, mark as farmer.
+  // Else regular user.
+  
+  const isFarmerRole = !isSupplier && govtId ? true : false;
+  const isSupplierRole = isSupplier ? true : false;
   const isVerified = false; 
 
   const user = await User.create({
@@ -56,7 +60,8 @@ const registerUser = asyncHandler(async (req, res) => {
     mobile,
     password,
     govtId,
-    isFarmer,
+    isFarmer: isFarmerRole,
+    isSupplier: isSupplierRole,
     isVerified
   });
 
@@ -68,6 +73,7 @@ const registerUser = asyncHandler(async (req, res) => {
       mobile: user.mobile,
       isAdmin: user.isAdmin,
       isFarmer: user.isFarmer,
+      isSupplier: user.isSupplier,
       isVerified: user.isVerified,
       govtId: user.govtId,
       token: generateToken(user._id),
@@ -93,6 +99,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       isAdmin: user.isAdmin,
       farmDetails: user.farmDetails,
       address: user.address,
+      image: user.image,
     });
   } else {
     res.status(404);
@@ -112,6 +119,12 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.mobile = req.body.mobile || user.mobile;
     user.farmDetails = req.body.farmDetails || user.farmDetails;
     user.address = req.body.address || user.address;
+    
+    // Check if image is present in request body (even if empty string)
+    if (req.body.image !== undefined) {
+      user.image = req.body.image;
+    }
+
     if (req.body.password) {
       user.password = req.body.password;
     }
@@ -125,9 +138,13 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       mobile: updatedUser.mobile,
       isAdmin: updatedUser.isAdmin,
       isFarmer: updatedUser.isFarmer,
+      isSupplier: updatedUser.isSupplier,
       isVerified: updatedUser.isVerified,
       govtId: updatedUser.govtId,
       token: generateToken(updatedUser._id),
+      farmDetails: updatedUser.farmDetails,
+      address: updatedUser.address,
+      image: updatedUser.image,
     });
   } else {
     res.status(404);

@@ -16,6 +16,7 @@ const UserEditPage = () => {
   const [email, setEmail] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [isFarmer, setIsFarmer] = useState(false);
+  const [isSupplier, setIsSupplier] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [govtId, setGovtId] = useState('');
 
@@ -36,6 +37,7 @@ const UserEditPage = () => {
       setEmail(user.email);
       setIsAdmin(user.isAdmin);
       setIsFarmer(user.isFarmer);
+      setIsSupplier(user.isSupplier);
       setIsVerified(user.isVerified);
       setGovtId(user.govtId || '');
     }
@@ -44,7 +46,7 @@ const UserEditPage = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      await updateUser({ userId, name, email, isAdmin, isFarmer, isVerified, govtId });
+      await updateUser({ userId, name, email, isAdmin, isFarmer, isSupplier, isVerified, govtId });
       toast.success('User updated successfully');
       refetch();
       navigate('/admin/userlist');
@@ -140,14 +142,29 @@ const UserEditPage = () => {
                 </label>
               </div>
 
+              {/* Is Supplier */}
+              <div className='flex items-center gap-3 p-6 bg-gray-50 rounded-2xl border border-gray-100'>
+                <input
+                  type='checkbox'
+                  id='isSupplier'
+                  checked={isSupplier}
+                  onChange={(e) => setIsSupplier(e.target.checked)}
+                  className='w-6 h-6 rounded-lg border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer'
+                />
+                <label htmlFor='isSupplier' className='flex items-center gap-2 font-bold text-gray-700 cursor-pointer'>
+                  <UserIcon size={18} className='text-primary-600' />
+                  Supplier Role
+                </label>
+              </div>
+
               {/* Govt ID */}
               <div>
-                <label className='block text-sm font-bold text-gray-700 mb-2'>Government Farmer ID</label>
+                <label className='block text-sm font-bold text-gray-700 mb-2'>Government ID / GST ID</label>
                 <div className='relative'>
                   <Shield className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
                   <input
                     type='text'
-                    placeholder='Enter Govt ID'
+                    placeholder='Enter ID'
                     value={govtId}
                     onChange={(e) => setGovtId(e.target.value)}
                     className='w-full pl-11 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50/30 transition-all'
@@ -166,7 +183,7 @@ const UserEditPage = () => {
                 />
                 <label htmlFor='isVerified' className='flex items-center gap-2 font-bold text-gray-700 cursor-pointer'>
                   <Shield size={18} className='text-green-600' />
-                  Verify User (Approved Farmer)
+                  Verify User (Approved)
                 </label>
               </div>
 

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 const FarmerRoute = () => {
   const { userInfo } = useSelector((state) => state.auth);
-  return userInfo && (userInfo.isFarmer || userInfo.isAdmin) ? (
+  return userInfo && (userInfo.isFarmer || userInfo.isSupplier || userInfo.isAdmin) ? (
     <Outlet />
   ) : (
     <Navigate to='/login' replace />

@@ -55,6 +55,16 @@ const Header = () => {
               </div>
             )}
 
+            {userInfo?.isSupplier && (
+              <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${userInfo.isVerified ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}`}>
+                {userInfo.isVerified ? (
+                  <>✓ Verified Supplier</>
+                ) : (
+                  <>⏳ Pending Approval</>
+                )}
+              </div>
+            )}
+
             <Link to='/cart' className='relative p-2 text-gray-600 hover:text-primary-600'>
               <ShoppingCart size={24} />
               {cartItems.length > 0 && (
@@ -70,32 +80,50 @@ const Header = () => {
 
             {userInfo ? (
               <div className='relative group'>
-                <button className='flex items-center gap-1 p-2 text-gray-600 hover:text-primary-600'>
-                  <User size={24} />
-                  <span className='hidden sm:inline font-medium'>{userInfo.name}</span>
+                <button className='flex items-center gap-2 p-1 text-gray-600 hover:text-primary-600 font-medium'>
+                  {userInfo.image ? (
+                    <div className='w-8 h-8 rounded-full overflow-hidden border border-gray-200'>
+                      <img src={userInfo.image} alt={userInfo.name} className='w-full h-full object-cover' />
+                    </div>
+                  ) : (
+                    <div className='bg-gray-100 p-1.5 rounded-full'>
+                      <User size={20} />
+                    </div>
+                  )}
+                  <span className='hidden sm:inline'>{userInfo.name}</span>
                 </button>
-                <div className='absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg hidden group-hover:block overflow-hidden'>
-                  <Link to='/profile' className='block px-4 py-2 hover:bg-gray-100'>Profile</Link>
-                  {userInfo.isAdmin && (
-                    <>
-                      <div className='border-t'></div>
-                      <Link to='/admin/productlist' className='block px-4 py-2 hover:bg-gray-100 font-bold text-primary-600 uppercase text-xs tracking-wider'>Admin Panel</Link>
-                      <Link to='/admin/productlist' className='block px-4 py-2 hover:bg-gray-100'>Manage Products</Link>
-                      <Link to='/admin/orderlist' className='block px-4 py-2 hover:bg-gray-100'>Manage Orders</Link>
-                      <Link to='/admin/userlist' className='block px-4 py-2 hover:bg-gray-100'>Manage Users</Link>
-                      <Link to='/admin/knowledgelist' className='block px-4 py-2 hover:bg-gray-100'>Manage Knowledge</Link>
-                    </>
-                  )}
-                  {userInfo.isFarmer && !userInfo.isAdmin && (
-                    <>
-                      <div className='border-t'></div>
-                      <Link to='/farmer/productlist' className='block px-4 py-2 hover:bg-gray-100 font-bold text-green-600 uppercase text-xs tracking-wider'>Farmer Shop</Link>
-                      <Link to='/farmer/productlist' className='block px-4 py-2 hover:bg-gray-100'>My Products</Link>
-                      <Link to='/farmer/orderlist' className='block px-4 py-2 hover:bg-gray-100'>Farmer Orders</Link>
-                    </>
-                  )}
-                  <div className='border-t'></div>
-                  <button onClick={logoutHandler} className='block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600'>Logout</button>
+                <div className='absolute right-0 top-full pt-2 w-48 hidden group-hover:block z-50'>
+                  <div className='bg-white border rounded-lg shadow-lg overflow-hidden'>
+                    <Link to='/profile' className='block px-4 py-2 hover:bg-gray-100'>Profile</Link>
+                    {userInfo.isAdmin && (
+                      <>
+                        <div className='border-t'></div>
+                        <Link to='/admin/productlist' className='block px-4 py-2 hover:bg-gray-100 font-bold text-primary-600 uppercase text-xs tracking-wider'>Admin Panel</Link>
+                        <Link to='/admin/productlist' className='block px-4 py-2 hover:bg-gray-100'>Manage Products</Link>
+                        <Link to='/admin/orderlist' className='block px-4 py-2 hover:bg-gray-100'>Manage Orders</Link>
+                        <Link to='/admin/userlist' className='block px-4 py-2 hover:bg-gray-100'>Manage Users</Link>
+                        <Link to='/admin/knowledgelist' className='block px-4 py-2 hover:bg-gray-100'>Manage Knowledge</Link>
+                      </>
+                    )}
+                    {userInfo.isFarmer && !userInfo.isAdmin && userInfo.isVerified && (
+                      <>
+                        <div className='border-t'></div>
+                        <Link to='/farmer/productlist' className='block px-4 py-2 hover:bg-gray-100 font-bold text-green-600 uppercase text-xs tracking-wider'>Farmer Shop</Link>
+                        <Link to='/farmer/productlist' className='block px-4 py-2 hover:bg-gray-100'>My Products</Link>
+                        <Link to='/farmer/orderlist' className='block px-4 py-2 hover:bg-gray-100'>Farmer Orders</Link>
+                      </>
+                    )}
+                    {userInfo.isSupplier && !userInfo.isAdmin && userInfo.isVerified && (
+                      <>
+                        <div className='border-t'></div>
+                        <Link to='/farmer/productlist' className='block px-4 py-2 hover:bg-gray-100 font-bold text-blue-600 uppercase text-xs tracking-wider'>Supplier Shop</Link>
+                        <Link to='/farmer/productlist' className='block px-4 py-2 hover:bg-gray-100'>My Products</Link>
+                        <Link to='/farmer/orderlist' className='block px-4 py-2 hover:bg-gray-100'>Supplier Orders</Link>
+                      </>
+                    )}
+                    <div className='border-t'></div>
+                    <button onClick={logoutHandler} className='block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600'>Logout</button>
+                  </div>
                 </div>
               </div>
             ) : (

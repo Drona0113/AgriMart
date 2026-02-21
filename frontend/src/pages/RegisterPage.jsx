@@ -6,7 +6,15 @@ import { useRegisterMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
-import { UserPlus, Mail, Lock, User, Phone, Tractor } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, Phone, Tractor, Store } from 'lucide-react';
+import { 
+  INPUT_CLASSES, 
+  LABEL_CLASSES,
+  CARD_CLASSES,
+  ICON_WRAPPER_CLASSES,
+  TITLE_CLASSES,
+  SUBTITLE_CLASSES
+} from '../utils/styles';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -15,6 +23,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [govtId, setGovtId] = useState('');
+  const [isSupplier, setIsSupplier] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -39,7 +48,7 @@ const RegisterPage = () => {
       toast.error('Passwords do not match');
     } else {
       try {
-        const res = await register({ name, email, mobile, password, govtId }).unwrap();
+        const res = await register({ name, email, mobile, password, govtId, isSupplier }).unwrap();
         dispatch(setCredentials({ ...res }));
         navigate(redirect);
       } catch (err) {
@@ -50,25 +59,43 @@ const RegisterPage = () => {
 
   return (
     <FormContainer>
-      <div className='bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-gray-100'>
+      <div className={CARD_CLASSES}>
         <div className='flex flex-col items-center mb-10'>
-          <div className='bg-primary-100 p-4 rounded-2xl text-primary-600 mb-4'>
-            <UserPlus size={32} />
+          <div className={ICON_WRAPPER_CLASSES}>
+            {isSupplier ? <Store size={32} /> : <UserPlus size={32} />}
           </div>
-          <h1 className='text-3xl font-black text-gray-900'>Create Account</h1>
-          <p className='text-gray-500 mt-2 font-medium'>Join AgriMart for your farming needs</p>
+          <h1 className={TITLE_CLASSES}>Create Account</h1>
+          <p className={SUBTITLE_CLASSES}>Join AgriMart as a {isSupplier ? 'Supplier' : 'Farmer/User'}</p>
+        </div>
+
+        {/* Role Toggle */}
+        <div className="flex bg-gray-100 p-1 rounded-xl mb-8">
+          <button
+            type="button"
+            className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${!isSupplier ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setIsSupplier(false)}
+          >
+            Farmer Registration
+          </button>
+          <button
+            type="button"
+            className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${isSupplier ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setIsSupplier(true)}
+          >
+            Supplier Registration
+          </button>
         </div>
 
         <form onSubmit={submitHandler} className='space-y-6'>
           <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
+            <label className={LABEL_CLASSES}>
               Full Name
             </label>
             <div className='relative'>
               <User className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
                 type='text'
-                className='w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50 focus:bg-white transition-all'
+                className={INPUT_CLASSES}
                 placeholder='Enter your name'
                 value={name}
                 required
@@ -78,14 +105,14 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
+            <label className={LABEL_CLASSES}>
               Email Address
             </label>
             <div className='relative'>
               <Mail className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
                 type='email'
-                className='w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50 focus:bg-white transition-all'
+                className={INPUT_CLASSES}
                 placeholder='farmer@example.com'
                 value={email}
                 required
@@ -95,14 +122,14 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
+            <label className={LABEL_CLASSES}>
               Mobile Number
             </label>
             <div className='relative'>
               <Phone className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
                 type='tel'
-                className='w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50 focus:bg-white transition-all'
+                className={INPUT_CLASSES}
                 placeholder='9876543210'
                 value={mobile}
                 required
@@ -112,15 +139,19 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
-              Farmer ID / Kisan Card (Optional)
+            <label className={LABEL_CLASSES}>
+              {isSupplier ? 'Supplier GST Shop ID (Optional)' : 'Farmer ID / Kisan Card (Optional)'}
             </label>
             <div className='relative'>
-              <Tractor className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
+              {isSupplier ? (
+                <Store className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
+              ) : (
+                <Tractor className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
+              )}
               <input
                 type='text'
-                className='w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50 focus:bg-white transition-all'
-                placeholder='e.g., KCC1234567890 or AP12345678'
+                className={INPUT_CLASSES}
+                placeholder={isSupplier ? 'e.g., 22AAAAA0000A1Z5' : 'e.g., KCC1234567890 or AP12345678'}
                 value={govtId}
                 onChange={(e) => setGovtId(e.target.value)}
                 pattern="[A-Za-z0-9]{10,16}"
@@ -128,19 +159,19 @@ const RegisterPage = () => {
               />
             </div>
             <p className='text-xs text-gray-400 mt-2 font-medium ml-2'>
-              * Provide this ID to get verified as a Farmer and sell products.
+              * Provide this ID to get verified as a {isSupplier ? 'Supplier' : 'Farmer'} and sell products.
             </p>
           </div>
 
           <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
+            <label className={LABEL_CLASSES}>
               Password
             </label>
             <div className='relative'>
               <Lock className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
                 type='password'
-                className='w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50 focus:bg-white transition-all'
+                className={INPUT_CLASSES}
                 placeholder='Enter your password'
                 value={password}
                 required
@@ -150,14 +181,14 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
+            <label className={LABEL_CLASSES}>
               Confirm Password
             </label>
             <div className='relative'>
               <Lock className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
                 type='password'
-                className='w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50 focus:bg-white transition-all'
+                className={INPUT_CLASSES}
                 placeholder='Confirm your password'
                 value={confirmPassword}
                 required
@@ -175,7 +206,7 @@ const RegisterPage = () => {
                 className='mt-1 w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500'
               />
               <label htmlFor='consent' className='text-sm text-gray-600 leading-snug'>
-                I hereby consent to providing my Government ID for verification purposes only. I understand this information will be securely used by AgriMart solely to validate my Farmer status.
+                I hereby consent to providing my {isSupplier ? 'GST Shop ID' : 'Government ID'} for verification purposes only. I understand this information will be securely used by AgriMart solely to validate my {isSupplier ? 'Supplier' : 'Farmer'} status.
               </label>
             </div>
           )}

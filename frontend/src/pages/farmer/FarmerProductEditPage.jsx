@@ -91,7 +91,7 @@ const FarmerProductEditPage = () => {
 
   return (
     <div className='max-w-4xl mx-auto'>
-      <Link to='/farmer/productlist' className='inline-flex items-center gap-2 text-gray-600 font-bold hover:text-green-600 transition-colors mb-8'>
+      <Link to='/farmer/productlist' className={`inline-flex items-center gap-2 text-gray-600 font-bold ${userInfo.isSupplier ? 'hover:text-blue-600' : 'hover:text-green-600'} transition-colors mb-8`}>
         <ChevronLeft size={20} /> Back to My Shop
       </Link>
 

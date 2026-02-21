@@ -70,7 +70,7 @@ const createProduct = asyncHandler(async (req, res) => {
   // Check if user is verified
   if (!req.user.isVerified) {
     res.status(403);
-    throw new Error('Farmer verification pending. You cannot add products yet.');
+    throw new Error('Seller verification pending. You cannot add products yet.');
   }
 
   const product = new Product({

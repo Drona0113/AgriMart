@@ -41,10 +41,10 @@ const admin = (req, res, next) => {
 };
 
 const farmer = (req, res, next) => {
-  if (req.user && (req.user.isFarmer || req.user.isAdmin)) {
+  if (req.user && (req.user.isFarmer || req.user.isSupplier || req.user.isAdmin)) {
     next();
   } else {
-    res.status(401).json({ message: 'Not authorized as a farmer' });
+    res.status(401).json({ message: 'Not authorized as a seller' });
   }
 };
 

@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -7,9 +8,15 @@ import Order from '../models/orderModel.js';
 const addOrderItems = asyncHandler(async (req, res) => {
   // Check if user is verified
   // We only restrict regular users/farmers. Admins are exempt.
-  if (!req.user.isAdmin && !req.user.isVerified) {
-    res.status(403);
-    throw new Error('Identity verification required. Only verified farmers can purchase agricultural products.');
+  if (!req.user.isAdmin) {
+    if (!req.user.isFarmer) {
+      res.status(403);
+      throw new Error('Access denied. Only registered farmers can purchase agricultural products.');
+    }
+    if (!req.user.isVerified) {
+      res.status(403);
+      throw new Error('Identity verification required. Only verified farmers can purchase agricultural products.');
+    }
   }
 
   const {
@@ -122,6 +129,16 @@ const getOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
+// @desc    Get logged in farmer orders
+// @route   GET /api/orders/my-sales
+// @access  Private/Farmer
+const getFarmerOrders = asyncHandler(async (req, res) => {
+  const products = await Product.find({ user: req.user._id });
+  const productIds = products.map((p) => p._id);
+  const orders = await Order.find({ 'orderItems.product': { $in: productIds } }).populate('user', 'id name');
+  res.json(orders);
+});
+
 export {
   addOrderItems,
   getOrderById,
@@ -129,4 +146,5 @@ export {
   updateOrderToDelivered,
   getMyOrders,
   getOrders,
+  getFarmerOrders,
 };

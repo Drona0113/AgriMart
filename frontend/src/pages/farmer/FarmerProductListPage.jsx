@@ -41,7 +41,7 @@ const FarmerProductListPage = () => {
 
   const createProductHandler = async () => {
     if (!userInfo.isVerified) {
-      toast.error('You must be a verified farmer to add products. Please wait for admin approval.');
+      toast.error('You must be a verified seller to add products. Please wait for admin approval.');
       return;
     }
     if (window.confirm('Are you sure you want to create a new product?')) {
@@ -60,19 +60,21 @@ const FarmerProductListPage = () => {
     <div className='max-w-7xl mx-auto'>
       <div className='flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10'>
         <div className='flex items-center gap-4'>
-          <div className='bg-green-100 p-3 rounded-2xl text-green-600'>
+          <div className={`${userInfo.isSupplier ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'} p-3 rounded-2xl`}>
             <Store size={32} />
           </div>
           <div>
-            <h1 className='text-4xl font-black text-gray-900'>My Farmer Shop</h1>
-            <p className='text-gray-500 font-medium'>Manage your products for other farmers to buy</p>
+            <h1 className='text-4xl font-black text-gray-900'>{userInfo.isSupplier ? 'My Supplier Shop' : 'My Farmer Shop'}</h1>
+            <p className='text-gray-500 font-medium'>
+              {userInfo.isSupplier ? 'Manage your products for farmers to buy' : 'Manage your products for other farmers to buy'}
+            </p>
           </div>
         </div>
 
         {userInfo.isVerified ? (
           <button
             onClick={createProductHandler}
-            className='inline-flex items-center gap-2 bg-green-600 text-white px-6 py-4 rounded-2xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200'
+            className={`inline-flex items-center gap-2 ${userInfo.isSupplier ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-200' : 'bg-green-600 hover:bg-green-700 shadow-green-200'} text-white px-6 py-4 rounded-2xl font-bold transition-all shadow-lg`}
           >
             <Plus size={20} /> Add New Product
           </button>
@@ -81,7 +83,7 @@ const FarmerProductListPage = () => {
             <span className='font-bold text-2xl'>⏳</span>
             <div>
               <p className='font-bold'>Verification Pending</p>
-              <p className='text-sm'>Waiting for Village Volunteer approval to enable selling.</p>
+              <p className='text-sm'>Waiting for approval to enable selling.</p>
             </div>
           </div>
         )}

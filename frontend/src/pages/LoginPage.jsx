@@ -7,6 +7,14 @@ import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
 import { LogIn, Mail, Lock } from 'lucide-react';
+import { 
+  INPUT_CLASSES, 
+  LABEL_CLASSES,
+  CARD_CLASSES,
+  ICON_WRAPPER_CLASSES,
+  TITLE_CLASSES,
+  SUBTITLE_CLASSES
+} from '../utils/styles';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -42,25 +50,25 @@ const LoginPage = () => {
 
   return (
     <FormContainer>
-      <div className='bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-gray-100'>
+      <div className={CARD_CLASSES}>
         <div className='flex flex-col items-center mb-10'>
-          <div className='bg-primary-100 p-4 rounded-2xl text-primary-600 mb-4'>
+          <div className={ICON_WRAPPER_CLASSES}>
             <LogIn size={32} />
           </div>
-          <h1 className='text-3xl font-black text-gray-900'>Welcome Back</h1>
-          <p className='text-gray-500 mt-2 font-medium'>Sign in to your AgriMart account</p>
+          <h1 className={TITLE_CLASSES}>Welcome Back</h1>
+          <p className={SUBTITLE_CLASSES}>Sign in to your AgriMart account</p>
         </div>
 
         <form onSubmit={submitHandler} className='space-y-6'>
           <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
+            <label className={LABEL_CLASSES}>
               Email Address
             </label>
             <div className='relative'>
               <Mail className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
                 type='email'
-                className='w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50 focus:bg-white transition-all'
+                className={INPUT_CLASSES}
                 placeholder='farmer@example.com'
                 value={email}
                 required
@@ -70,14 +78,14 @@ const LoginPage = () => {
           </div>
 
           <div>
-            <label className='block text-sm font-bold text-gray-700 mb-2'>
+            <label className={LABEL_CLASSES}>
               Password
             </label>
             <div className='relative'>
               <Lock className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
                 type='password'
-                className='w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50 focus:bg-white transition-all'
+                className={INPUT_CLASSES}
                 placeholder='Enter your password'
                 value={password}
                 required

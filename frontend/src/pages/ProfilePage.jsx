@@ -5,16 +5,26 @@ import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { useProfileMutation } from '../slices/usersApiSlice';
+import { useUploadProductImageMutation } from '../slices/productsApiSlice';
 import { useGetMyOrdersQuery } from '../slices/ordersApiSlice';
 import { setCredentials } from '../slices/authSlice';
-import { User, Mail, Lock, ShoppingBag, ArrowRight, XCircle, CheckCircle, Phone } from 'lucide-react';
+import { User, Mail, Lock, ShoppingBag, ArrowRight, XCircle, CheckCircle, Phone, MapPin, Upload, Camera, Trash2, Edit2, Eye, X } from 'lucide-react';
 
 const ProfilePage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [image, setImage] = useState('');
+  const [address, setAddress] = useState({
+    street: '',
+    city: '',
+    state: '',
+    pincode: '',
+    landmark: ''
+  });
+  const [showImagePreview, setShowImagePreview] = useState(false);
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -22,14 +32,34 @@ const ProfilePage = () => {
 
   const [updateProfile, { isLoading: loadingUpdateProfile }] =
     useProfileMutation();
+    
+  const [uploadProductImage, { isLoading: loadingUpload }] =
+    useUploadProductImageMutation();
 
   useEffect(() => {
     setName(userInfo.name);
     setEmail(userInfo.email);
     setMobile(userInfo.mobile || '');
-  }, [userInfo.email, userInfo.name, userInfo.mobile]);
+    setImage(userInfo.image || '');
+    if (userInfo.address) {
+      setAddress(userInfo.address);
+    }
+  }, [userInfo.email, userInfo.name, userInfo.mobile, userInfo.image, userInfo.address]);
 
   const dispatch = useDispatch();
+
+  const uploadFileHandler = async (e) => {
+    const formData = new FormData();
+    formData.append('image', e.target.files[0]);
+    try {
+      const res = await uploadProductImage(formData).unwrap();
+      toast.success(res.message);
+      setImage(res.image);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -42,6 +72,8 @@ const ProfilePage = () => {
           email,
           mobile,
           password,
+          image,
+          address,
         }).unwrap();
         dispatch(setCredentials({ ...res }));
         toast.success('Profile updated successfully');
@@ -51,8 +83,35 @@ const ProfilePage = () => {
     }
   };
 
+  const handleAddressChange = (e) => {
+    setAddress({ ...address, [e.target.name]: e.target.value });
+  };
+
+  const removeImageHandler = () => {
+    if (window.confirm('Are you sure you want to remove your profile photo?')) {
+      setImage('');
+    }
+  };
+
   return (
     <div className='max-w-7xl mx-auto'>
+      {/* Image Preview Modal */}
+      {showImagePreview && image && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4' onClick={() => setShowImagePreview(false)}>
+          <div className='relative max-w-2xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200' onClick={e => e.stopPropagation()}>
+            <div className='absolute top-4 right-4 z-10'>
+              <button 
+                onClick={() => setShowImagePreview(false)}
+                className='bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors'
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <img src={image} alt="Profile Full View" className='w-full h-auto max-h-[80vh] object-contain' />
+          </div>
+        </div>
+      )}
+
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-12'>
         {/* User Profile Form */}
         <div className='lg:col-span-1'>
@@ -65,6 +124,61 @@ const ProfilePage = () => {
             </div>
 
             <form onSubmit={submitHandler} className='space-y-6'>
+              
+              {/* Profile Image Upload */}
+              <div className='flex flex-col items-center justify-center mb-6'>
+                <div className='relative w-32 h-32 mb-4 group'>
+                  <div className='w-full h-full rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100 flex items-center justify-center'>
+                    {image ? (
+                      <img src={image} alt="Profile" className='w-full h-full object-cover' />
+                    ) : (
+                      <User size={64} className='text-gray-300' />
+                    )}
+                  </div>
+                  
+                  {/* Hover Actions */}
+                  <div className='absolute inset-0 rounded-full bg-black/40 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10'>
+                    {image && (
+                      <button 
+                        type="button" 
+                        onClick={() => setShowImagePreview(true)}
+                        className='p-2 bg-white rounded-full text-gray-700 hover:text-blue-600 cursor-pointer shadow-lg transform hover:scale-110 transition-all'
+                        title="View Photo"
+                      >
+                        <Eye size={16} />
+                      </button>
+                    )}
+                    <label htmlFor="image-upload" className='p-2 bg-white rounded-full text-gray-700 hover:text-primary-600 cursor-pointer shadow-lg transform hover:scale-110 transition-all' title="Change Photo">
+                      <Edit2 size={16} />
+                    </label>
+                    {image && (
+                      <button 
+                        type="button" 
+                        onClick={removeImageHandler}
+                        className='p-2 bg-white rounded-full text-gray-700 hover:text-red-500 cursor-pointer shadow-lg transform hover:scale-110 transition-all'
+                        title="Remove Photo"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+
+                  {!image && (
+                    <label htmlFor="image-upload" className='absolute bottom-0 right-0 bg-primary-600 text-white p-2 rounded-full cursor-pointer hover:bg-primary-700 transition-colors shadow-md'>
+                      {loadingUpload ? <Loader size={16} /> : <Camera size={16} />}
+                    </label>
+                  )}
+                  
+                  <input
+                    id="image-upload"
+                    type="file"
+                    className="hidden"
+                    onChange={uploadFileHandler}
+                  />
+                </div>
+                <p className='text-sm text-gray-500'>Upload Profile Photo</p>
+              </div>
+
               <div>
                 <label className='block text-sm font-bold text-gray-700 mb-2'>
                   Full Name
@@ -110,6 +224,78 @@ const ProfilePage = () => {
                     value={mobile}
                     onChange={(e) => setMobile(e.target.value)}
                   />
+                </div>
+              </div>
+
+              {/* Address Section */}
+              <div className='pt-4 border-t border-gray-100'>
+                <h3 className='text-lg font-bold text-gray-900 mb-4'>Address Details</h3>
+                
+                <div className='space-y-4'>
+                  <div>
+                    <label className='block text-sm font-bold text-gray-700 mb-2'>Street / Village</label>
+                    <div className='relative'>
+                      <MapPin className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
+                      <input
+                        type='text'
+                        name='street'
+                        className='w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
+                        placeholder='Enter street or village'
+                        value={address.street}
+                        onChange={handleAddressChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <label className='block text-sm font-bold text-gray-700 mb-2'>City / District</label>
+                      <input
+                        type='text'
+                        name='city'
+                        className='w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
+                        placeholder='City'
+                        value={address.city}
+                        onChange={handleAddressChange}
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-sm font-bold text-gray-700 mb-2'>State</label>
+                      <input
+                        type='text'
+                        name='state'
+                        className='w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
+                        placeholder='State'
+                        value={address.state}
+                        onChange={handleAddressChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <label className='block text-sm font-bold text-gray-700 mb-2'>Pincode</label>
+                      <input
+                        type='text'
+                        name='pincode'
+                        className='w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
+                        placeholder='Pincode'
+                        value={address.pincode}
+                        onChange={handleAddressChange}
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-sm font-bold text-gray-700 mb-2'>Landmark</label>
+                      <input
+                        type='text'
+                        name='landmark'
+                        className='w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
+                        placeholder='Landmark'
+                        value={address.landmark}
+                        onChange={handleAddressChange}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 

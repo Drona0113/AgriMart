@@ -15,6 +15,8 @@ const PlaceOrderPage = () => {
 
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
+  const { userInfo } = useSelector((state) => state.auth);
+
   useEffect(() => {
     if (!cart.shippingAddress.address) {
       navigate('/shipping');
@@ -147,10 +149,22 @@ const PlaceOrderPage = () => {
               </Message>
             )}
 
+            {!userInfo.isAdmin && !userInfo.isFarmer && (
+              <Message variant='danger'>
+                Access Denied: Only registered farmers can place orders.
+              </Message>
+            )}
+
+            {!userInfo.isAdmin && userInfo.isFarmer && !userInfo.isVerified && (
+              <Message variant='warning'>
+                Verification Pending: You can place orders once your farmer account is verified.
+              </Message>
+            )}
+
             <button
               type='button'
               className='w-full btn-primary py-4 rounded-xl flex items-center justify-center gap-2'
-              disabled={cart.cartItems.length === 0 || isLoading}
+              disabled={cart.cartItems.length === 0 || isLoading || (!userInfo.isAdmin && (!userInfo.isFarmer || !userInfo.isVerified))}
               onClick={placeOrderHandler}
             >
               {isLoading ? <Loader /> : (
