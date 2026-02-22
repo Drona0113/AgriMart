@@ -58,6 +58,19 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+    unmaskUser: builder.mutation({
+      query: (userId) => ({
+        url: `${USERS_URL}/unmask-id`,
+        method: 'POST',
+        body: { id: userId },
+      }),
+    }),
+    getAuditLogs: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/audit-logs`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -70,4 +83,6 @@ export const {
   useDeleteUserMutation,
   useGetUserDetailsQuery,
   useUpdateUserMutation,
+  useUnmaskUserMutation,
+  useGetAuditLogsQuery,
 } = usersApiSlice;

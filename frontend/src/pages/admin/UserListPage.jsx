@@ -6,7 +6,7 @@ import {
 } from '../../slices/usersApiSlice';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
-import { Users, Trash2, Edit, CheckCircle, XCircle, Mail, User as UserIcon, Shield } from 'lucide-react';
+import { Users, Trash2, Edit, CheckCircle, XCircle, Mail, User as UserIcon, Shield, FileText } from 'lucide-react';
 
 const UserListPage = () => {
   const { data: users, refetch, isLoading, error } = useGetUsersQuery();
@@ -27,14 +27,24 @@ const UserListPage = () => {
 
   return (
     <div className='max-w-7xl mx-auto'>
-      <div className='flex items-center gap-4 mb-10'>
-        <div className='bg-primary-100 p-3 rounded-2xl text-primary-600'>
-          <Users size={32} />
+      <div className='flex items-center justify-between mb-10'>
+        <div className='flex items-center gap-4'>
+          <div className='bg-primary-100 p-3 rounded-2xl text-primary-600'>
+            <Users size={32} />
+          </div>
+          <div>
+            <h1 className='text-4xl font-black text-gray-900'>User Management</h1>
+            <p className='text-gray-500 font-medium'>Manage registered users and verify sellers</p>
+          </div>
         </div>
-        <div>
-          <h1 className='text-4xl font-black text-gray-900'>User Management</h1>
-          <p className='text-gray-500 font-medium'>Manage registered users and verify sellers (Sachivalayam Volunteer)</p>
-        </div>
+        
+        <Link 
+          to="/admin/audit-logs" 
+          className='flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium'
+        >
+          <FileText size={18} />
+          View Audit Logs
+        </Link>
       </div>
 
       {loadingDelete && <Loader />}

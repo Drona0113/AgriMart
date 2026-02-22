@@ -375,7 +375,7 @@ const ProfilePage = () => {
                     {orders.map((order) => (
                       <tr key={order._id} className='group hover:bg-gray-50 transition-colors'>
                         <td className='py-4 font-medium text-gray-900'>{order._id.substring(0, 8)}...</td>
-                        <td className='py-4 text-gray-600'>{order.createdAt.substring(0, 10)}</td>
+                        <td className='py-4 text-gray-600'>{new Date(order.createdAt).toLocaleString()}</td>
                         <td className='py-4 font-bold text-gray-900'>₹{order.totalPrice}</td>
                         <td className='py-4'>
                           {order.isPaid ? (

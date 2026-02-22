@@ -44,8 +44,18 @@ const farmer = (req, res, next) => {
   if (req.user && (req.user.isFarmer || req.user.isSupplier || req.user.isAdmin)) {
     next();
   } else {
-    res.status(401).json({ message: 'Not authorized as a seller' });
+    res.status(401);
+    throw new Error('Not authorized as a seller');
   }
 };
 
-export { protect, admin, farmer };
+const checkStaffRole = (req, res, next) => {
+  if (req.user && (req.user.role === 'secretariat_staff' || req.user.isAdmin)) {
+    next();
+  } else {
+    res.status(401);
+    throw new Error('Not authorized as Secretariat Staff');
+  }
+};
+
+export { protect, admin, farmer, checkStaffRole };

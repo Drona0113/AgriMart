@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken.js';
 import User from '../models/userModel.js';
+import AuditLog from '../models/auditLogModel.js';
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -156,8 +157,19 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({});
-  res.json(users);
+  const users = await User.find({}).select('-password');
+  
+  const maskedUsers = users.map(user => {
+    const userObj = user.toObject();
+    if (userObj.govtId && userObj.govtId.length > 4) {
+      userObj.govtId = 'XXXX-XXXX-' + userObj.govtId.slice(-4);
+    } else if (userObj.govtId) {
+      userObj.govtId = 'XXXX';
+    }
+    return userObj;
+  });
+  
+  res.json(maskedUsers);
 });
 
 // @desc    Delete user
@@ -182,7 +194,40 @@ const getUserById = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id).select('-password');
 
   if (user) {
-    res.json(user);
+    const userObj = user.toObject();
+    // Mask sensitive data (govtId) - show only last 4 digits
+    if (userObj.govtId && userObj.govtId.length > 4) {
+      userObj.govtId = 'XXXX-XXXX-' + userObj.govtId.slice(-4);
+    } else if (userObj.govtId) {
+      userObj.govtId = 'XXXX';
+    }
+    res.json(userObj);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Unmask user sensitive data
+// @route   POST /api/users/unmask-id
+// @access  Private/Staff
+const unmaskUserField = asyncHandler(async (req, res) => {
+  const { id } = req.body;
+  const user = await User.findById(id);
+
+  if (user) {
+    // Log access
+    await AuditLog.create({
+      viewerId: req.user._id,
+      targetUserId: user._id,
+      action: 'UNMASKED_ID',
+      metadata: { 
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      }
+    });
+
+    res.json({ govtId: user.govtId });
   } else {
     res.status(404);
     throw new Error('User not found');
@@ -220,6 +265,17 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all audit logs
+// @route   GET /api/users/audit-logs
+// @access  Private/Admin
+const getAuditLogs = asyncHandler(async (req, res) => {
+  const logs = await AuditLog.find({})
+    .populate('viewerId', 'name email')
+    .populate('targetUserId', 'name email')
+    .sort({ createdAt: -1 });
+  res.json(logs);
+});
+
 export {
   authUser,
   registerUser,
@@ -229,4 +285,6 @@ export {
   deleteUser,
   getUserById,
   updateUser,
+  unmaskUserField,
+  getAuditLogs,
 };

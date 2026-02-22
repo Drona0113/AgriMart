@@ -31,6 +31,7 @@ import ProductListPage from './pages/admin/ProductListPage';
 import ProductEditPage from './pages/admin/ProductEditPage';
 import UserListPage from './pages/admin/UserListPage';
 import UserEditPage from './pages/admin/UserEditPage';
+import AuditLogPage from './pages/admin/AuditLogPage';
 import KnowledgeListPage from './pages/admin/KnowledgeListPage';
 import KnowledgeEditPage from './pages/admin/KnowledgeEditPage';
 import FarmerProductListPage from './pages/farmer/FarmerProductListPage';
@@ -74,6 +75,7 @@ const router = createBrowserRouter(
         <Route path='/admin/userlist' element={<UserListPage />} />
         <Route path='/admin/product/:id/edit' element={<ProductEditPage />} />
         <Route path='/admin/user/:id/edit' element={<UserEditPage />} />
+        <Route path='/admin/audit-logs' element={<AuditLogPage />} />
         <Route path='/admin/knowledgelist' element={<KnowledgeListPage />} />
         <Route
           path='/admin/knowledge/:id/edit'

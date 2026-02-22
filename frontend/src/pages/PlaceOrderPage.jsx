@@ -149,22 +149,22 @@ const PlaceOrderPage = () => {
               </Message>
             )}
 
-            {!userInfo.isAdmin && !userInfo.isFarmer && (
+            {!userInfo.isAdmin && !userInfo.isFarmer && !userInfo.isSupplier && (
               <Message variant='danger'>
-                Access Denied: Only registered farmers can place orders.
+                Access Denied: Only registered farmers or suppliers can place orders.
               </Message>
             )}
 
-            {!userInfo.isAdmin && userInfo.isFarmer && !userInfo.isVerified && (
+            {!userInfo.isAdmin && (userInfo.isFarmer || userInfo.isSupplier) && !userInfo.isVerified && (
               <Message variant='warning'>
-                Verification Pending: You can place orders once your farmer account is verified.
+                Verification Pending: You can place orders once your account is verified.
               </Message>
             )}
 
             <button
               type='button'
               className='w-full btn-primary py-4 rounded-xl flex items-center justify-center gap-2'
-              disabled={cart.cartItems.length === 0 || isLoading || (!userInfo.isAdmin && (!userInfo.isFarmer || !userInfo.isVerified))}
+              disabled={cart.cartItems.length === 0 || isLoading || (!userInfo.isAdmin && ((!userInfo.isFarmer && !userInfo.isSupplier) || !userInfo.isVerified))}
               onClick={placeOrderHandler}
             >
               {isLoading ? <Loader /> : (

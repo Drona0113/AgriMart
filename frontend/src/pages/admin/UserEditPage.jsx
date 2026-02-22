@@ -4,10 +4,11 @@ import { toast } from 'react-toastify';
 import {
   useUpdateUserMutation,
   useGetUserDetailsQuery,
+  useUnmaskUserMutation,
 } from '../../slices/usersApiSlice';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
-import { ChevronLeft, User as UserIcon, Mail, Shield, Save } from 'lucide-react';
+import { ChevronLeft, User as UserIcon, Mail, Shield, Save, Eye, Loader2 } from 'lucide-react';
 
 const UserEditPage = () => {
   const { id: userId } = useParams();
@@ -28,6 +29,7 @@ const UserEditPage = () => {
   } = useGetUserDetailsQuery(userId);
 
   const [updateUser, { isLoading: loadingUpdate }] = useUpdateUserMutation();
+  const [unmaskUser, { isLoading: loadingUnmask }] = useUnmaskUserMutation();
 
   const navigate = useNavigate();
 
@@ -46,10 +48,26 @@ const UserEditPage = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      await updateUser({ userId, name, email, isAdmin, isFarmer, isSupplier, isVerified, govtId });
+      const updateData = { userId, name, email, isAdmin, isFarmer, isSupplier, isVerified };
+      // Only include govtId if it's not masked (i.e. user changed it or it's empty)
+      if (!govtId.includes('XXXX')) {
+        updateData.govtId = govtId;
+      }
+      
+      await updateUser(updateData).unwrap();
       toast.success('User updated successfully');
       refetch();
       navigate('/admin/userlist');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
+  const unmaskHandler = async () => {
+    try {
+      const res = await unmaskUser(userId).unwrap();
+      setGovtId(res.govtId);
+      toast.success('ID Unmasked & Logged');
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -167,8 +185,19 @@ const UserEditPage = () => {
                     placeholder='Enter ID'
                     value={govtId}
                     onChange={(e) => setGovtId(e.target.value)}
-                    className='w-full pl-11 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50/30 transition-all'
+                    className='w-full pl-11 pr-12 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50/30 transition-all'
                   />
+                  {govtId && govtId.includes('XXXX') && (
+                    <button
+                      type='button'
+                      onClick={unmaskHandler}
+                      disabled={loadingUnmask}
+                      className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary-600 transition-colors'
+                      title='Unmask ID (Logs access)'
+                    >
+                      {loadingUnmask ? <Loader2 size={18} className="animate-spin" /> : <Eye size={18} />}
+                    </button>
+                  )}
                 </div>
               </div>
 

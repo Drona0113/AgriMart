@@ -26,6 +26,10 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    role: {
+      type: String,
+      default: 'user', // Possible values: 'user', 'farmer', 'supplier', 'secretariat_staff'
+    },
     isFarmer: {
       type: Boolean,
       required: true,

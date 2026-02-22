@@ -51,7 +51,7 @@ const OrderListPage = () => {
                       <div className='text-xs text-gray-500 font-medium'>{order.user && order.user.email}</div>
                     </td>
                     <td className='px-8 py-6 text-gray-600 font-medium'>
-                      {order.createdAt.substring(0, 10)}
+                      {new Date(order.createdAt).toLocaleString()}
                     </td>
                     <td className='px-8 py-6'>
                       <span className='text-lg font-black text-gray-900'>₹{order.totalPrice}</span>

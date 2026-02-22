@@ -9,13 +9,13 @@ const addOrderItems = asyncHandler(async (req, res) => {
   // Check if user is verified
   // We only restrict regular users/farmers. Admins are exempt.
   if (!req.user.isAdmin) {
-    if (!req.user.isFarmer) {
+    if (!req.user.isFarmer && !req.user.isSupplier) {
       res.status(403);
-      throw new Error('Access denied. Only registered farmers can purchase agricultural products.');
+      throw new Error('Access denied. Only registered farmers or suppliers can purchase agricultural products.');
     }
     if (!req.user.isVerified) {
       res.status(403);
-      throw new Error('Identity verification required. Only verified farmers can purchase agricultural products.');
+      throw new Error('Identity verification required. Only verified farmers or suppliers can purchase agricultural products.');
     }
   }
 
@@ -117,7 +117,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
   res.json(orders);
 });
 
@@ -125,7 +125,7 @@ const getMyOrders = asyncHandler(async (req, res) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name');
+  const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
   res.json(orders);
 });
 
@@ -135,7 +135,9 @@ const getOrders = asyncHandler(async (req, res) => {
 const getFarmerOrders = asyncHandler(async (req, res) => {
   const products = await Product.find({ user: req.user._id });
   const productIds = products.map((p) => p._id);
-  const orders = await Order.find({ 'orderItems.product': { $in: productIds } }).populate('user', 'id name');
+  const orders = await Order.find({ 'orderItems.product': { $in: productIds } })
+    .populate('user', 'id name')
+    .sort({ createdAt: -1 });
   res.json(orders);
 });
 

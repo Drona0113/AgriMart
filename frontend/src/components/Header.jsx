@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ShoppingCart, User, LogOut, Menu, X, Sprout } from 'lucide-react';
 import { useState } from 'react';
 import { logout } from '../slices/authSlice';
-import { clearCartItems } from '../slices/cartSlice';
+import { clearCartItems, resetCart } from '../slices/cartSlice';
 import SearchBox from './SearchBox';
 import LanguageModal from './LanguageModal';
 
@@ -17,7 +17,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const logoutHandler = () => {
-    dispatch(clearCartItems());
+    dispatch(resetCart());
     dispatch(logout());
     navigate('/login');
   };
