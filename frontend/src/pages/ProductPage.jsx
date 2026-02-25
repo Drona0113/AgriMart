@@ -44,6 +44,17 @@ const ProductPage = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    if (!rating) {
+      toast.error('Please select a rating');
+      return;
+    }
+
+    if (!comment || comment.trim() === '') {
+      toast.error('Please enter a comment');
+      return;
+    }
+
     try {
       await createReview({
         productId,

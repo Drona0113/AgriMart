@@ -142,6 +142,16 @@ const updateProduct = asyncHandler(async (req, res) => {
 const createProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
 
+  if (!rating) {
+    res.status(400);
+    throw new Error('Please select a rating');
+  }
+
+  if (!comment || comment.trim() === '') {
+    res.status(400);
+    throw new Error('Please provide a comment for your review');
+  }
+
   const product = await Product.findById(req.params.id);
 
   if (product) {

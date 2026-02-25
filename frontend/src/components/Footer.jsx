@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <footer className='bg-white border-t mt-12'>
       <div className='container mx-auto px-4 py-12'>
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
           <div className='space-y-4'>
             <Link to='/' className='flex items-center gap-2 text-primary-600 font-bold text-2xl'>
               <Sprout size={32} />
@@ -34,15 +34,6 @@ const Footer = () => {
               <li><Link to='/knowledge' className='hover:text-primary-600'>Knowledge Hub</Link></li>
               <li><Link to='/profile' className='hover:text-primary-600'>My Account</Link></li>
               <li><Link to='/cart' className='hover:text-primary-600'>Shopping Cart</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className='font-bold text-lg mb-4'>Contact Us</h3>
-            <ul className='space-y-3 text-gray-600'>
-              <li className='flex items-center gap-2'><Phone size={18} /> +91 1800-AGRI-MART</li>
-              <li className='flex items-center gap-2'><Mail size={18} /> support@agrimart.com</li>
-              <li className='flex items-center gap-2'><MapPin size={18} /> Rural Empowerment Center, India</li>
             </ul>
           </div>
         </div>

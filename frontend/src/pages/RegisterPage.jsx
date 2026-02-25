@@ -140,7 +140,7 @@ const RegisterPage = () => {
 
           <div>
             <label className={LABEL_CLASSES}>
-              {isSupplier ? 'Supplier GST Shop ID (Optional)' : 'Farmer ID / Kisan Card (Optional)'}
+              {isSupplier ? 'Supplier GST Shop ID' : 'Farmer ID / Kisan Card'}
             </label>
             <div className='relative'>
               {isSupplier ? (
