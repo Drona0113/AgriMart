@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -10,7 +10,7 @@ import Rating from '../components/Rating';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { addToCart } from '../slices/cartSlice';
-import { ShoppingCart, ArrowLeft, Plus, Minus, Star } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Plus, Minus, Star, PlayCircle } from 'lucide-react';
 
 const ProductPage = () => {
   const { id: productId } = useParams();
@@ -20,6 +20,8 @@ const ProductPage = () => {
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [selectedImage, setSelectedImage] = useState('');
+  const [showVideo, setShowVideo] = useState(false);
 
   const {
     data: product,
@@ -32,6 +34,12 @@ const ProductPage = () => {
     useCreateReviewMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (product && !selectedImage) {
+      setSelectedImage(product.image);
+    }
+  }, [product, selectedImage]);
 
   const addToCartHandler = () => {
     if (!userInfo) {
@@ -85,13 +93,73 @@ const ProductPage = () => {
         <Message variant='danger'>{error?.data?.message || error.error}</Message>
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
-          {/* Product Image */}
-          <div className='bg-white p-4 rounded-3xl shadow-sm border border-gray-100 overflow-hidden'>
-            <img
-              src={product.image}
-              alt={product.name}
-              className='w-full h-auto rounded-2xl object-cover'
-            />
+          {/* Product Media Gallery */}
+          <div className='space-y-4'>
+            <div className='bg-white p-4 rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative group aspect-square flex items-center justify-center'>
+              {showVideo && product.videoUrl ? (
+                <div className='w-full h-full'>
+                  <iframe
+                    className='w-full h-full rounded-2xl'
+                    src={product.videoUrl.replace('watch?v=', 'embed/').replace('vimeo.com/', 'player.vimeo.com/video/')}
+                    title="Product Video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ) : (
+                <img
+                  src={selectedImage || product.image}
+                  alt={product.name}
+                  className='w-full h-full rounded-2xl object-cover transition-transform duration-500 group-hover:scale-105'
+                />
+              )}
+            </div>
+            
+            {/* Thumbnails */}
+            <div className='flex flex-wrap gap-4'>
+              {/* Main Image Thumbnail */}
+              <button
+                onClick={() => {
+                  setSelectedImage(product.image);
+                  setShowVideo(false);
+                }}
+                className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+                  !showVideo && selectedImage === product.image ? 'border-primary-500 shadow-md' : 'border-transparent hover:border-gray-200'
+                }`}
+              >
+                <img src={product.image} alt="Main" className='w-full h-full object-cover' />
+              </button>
+
+              {/* Additional Images Thumbnails */}
+              {product.images && product.images.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedImage(img);
+                    setShowVideo(false);
+                  }}
+                  className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+                    !showVideo && selectedImage === img ? 'border-primary-500 shadow-md' : 'border-transparent hover:border-gray-200'
+                  }`}
+                >
+                  <img src={img} alt={`Gallery ${index}`} className='w-full h-full object-cover' />
+                </button>
+              ))}
+
+              {/* Video Thumbnail */}
+              {product.videoUrl && (
+                <button
+                  onClick={() => setShowVideo(true)}
+                  className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all bg-gray-900 flex flex-col items-center justify-center text-white gap-1 ${
+                    showVideo ? 'border-primary-500 shadow-md' : 'border-transparent hover:border-gray-700'
+                  }`}
+                >
+                  <PlayCircle size={24} />
+                  <span className='text-[10px] font-bold uppercase'>Video</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Product Info */}

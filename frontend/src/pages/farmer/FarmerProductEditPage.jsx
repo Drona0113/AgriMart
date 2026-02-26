@@ -9,7 +9,7 @@ import {
 } from '../../slices/productsApiSlice';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
-import { ChevronLeft, Save, Upload, Package, Tag, IndianRupee, Box, Image as ImageIcon } from 'lucide-react';
+import { ChevronLeft, Save, Upload, Package, Tag, IndianRupee, Box, Image as ImageIcon, Plus, X, Video } from 'lucide-react';
 
 const FarmerProductEditPage = () => {
   const { id: productId } = useParams();
@@ -22,6 +22,8 @@ const FarmerProductEditPage = () => {
   const [category, setCategory] = useState('Seeds');
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState('');
+  const [images, setImages] = useState([]);
+  const [videoUrl, setVideoUrl] = useState('');
 
   const {
     data: product,
@@ -53,6 +55,8 @@ const FarmerProductEditPage = () => {
       setCategory(product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description);
+      setImages(product.images || []);
+      setVideoUrl(product.videoUrl || '');
     }
   }, [product, userInfo, navigate]);
 
@@ -68,6 +72,8 @@ const FarmerProductEditPage = () => {
         category,
         countInStock,
         description,
+        images,
+        videoUrl,
       }).unwrap();
       toast.success('Product updated');
       refetch();
@@ -77,13 +83,17 @@ const FarmerProductEditPage = () => {
     }
   };
 
-  const uploadFileHandler = async (e) => {
+  const uploadFileHandler = async (e, type = 'main') => {
     const formData = new FormData();
     formData.append('image', e.target.files[0]);
     try {
       const res = await uploadProductImage(formData).unwrap();
       toast.success(res.message);
-      setImage(res.image);
+      if (type === 'main') {
+        setImage(res.image);
+      } else {
+        setImages([...images, res.image]);
+      }
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -185,13 +195,13 @@ const FarmerProductEditPage = () => {
                 </div>
 
                 <div className='md:col-span-2'>
-                  <label className='block text-sm font-bold text-gray-700 mb-2'>Image</label>
+                  <label className='block text-sm font-bold text-gray-700 mb-2'>Main Product Image</label>
                   <div className='flex items-center gap-4'>
                     <div className='flex-grow relative'>
                       <ImageIcon className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
                       <input
                         type='text'
-                        placeholder='Enter image URL'
+                        placeholder='Enter main image URL'
                         value={image}
                         onChange={(e) => setImage(e.target.value)}
                         className='w-full pl-11 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-green-500 font-medium bg-gray-50/30 transition-all'
@@ -200,7 +210,7 @@ const FarmerProductEditPage = () => {
                     <div className='relative'>
                       <input
                         type='file'
-                        onChange={uploadFileHandler}
+                        onChange={(e) => uploadFileHandler(e, 'main')}
                         className='hidden'
                         id='image-upload'
                       />
@@ -208,11 +218,50 @@ const FarmerProductEditPage = () => {
                         htmlFor='image-upload'
                         className='inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-4 rounded-2xl font-bold hover:bg-gray-800 transition-all cursor-pointer whitespace-nowrap'
                       >
-                        <Upload size={18} /> Upload File
+                        <Upload size={18} /> Upload Main
                       </label>
                     </div>
                   </div>
                   {loadingUpload && <Loader />}
+                </div>
+
+                {/* Additional Images */}
+                <div className='md:col-span-2'>
+                  <label className='block text-sm font-bold text-gray-700 mb-2'>Additional Images (Optional)</label>
+                  <div className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4'>
+                    {images.map((img, index) => (
+                      <div key={index} className='relative aspect-square rounded-2xl overflow-hidden group border border-gray-100 shadow-sm'>
+                        <img src={img} alt={`Product ${index}`} className='w-full h-full object-cover' />
+                        <button
+                          type='button'
+                          onClick={() => setImages(images.filter((_, i) => i !== index))}
+                          className='absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-lg hover:bg-red-600'
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                    <label className='aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-green-300 hover:text-green-500 hover:bg-green-50 transition-all cursor-pointer'>
+                      <Plus size={24} />
+                      <span className='text-xs font-bold uppercase tracking-wider'>Add Image</span>
+                      <input type='file' className='hidden' onChange={(e) => uploadFileHandler(e, 'additional')} />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Video URL */}
+                <div className='md:col-span-2'>
+                  <label className='block text-sm font-bold text-gray-700 mb-2'>Video URL (YouTube/Vimeo)</label>
+                  <div className='relative'>
+                    <Video className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
+                    <input
+                      type='text'
+                      placeholder='Enter video URL'
+                      value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                      className='w-full pl-11 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-green-500 font-medium bg-gray-50/30 transition-all'
+                    />
+                  </div>
                 </div>
 
                 <div className='md:col-span-2'>

@@ -93,16 +93,72 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Update order to delivered
-// @route   PUT /api/orders/:id/deliver
-// @access  Private/Admin
-const updateOrderToDelivered = asyncHandler(async (req, res) => {
+// @desc    Update order to shipped
+// @route   PUT /api/orders/:id/ship
+// @access  Private/Admin or Farmer who owns the products
+const updateOrderToShipped = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
 
   if (order) {
+    // Check if admin OR if the logged-in user (farmer/supplier) owns any product in this order
+    const isAdmin = req.user.isAdmin;
+    const products = await Product.find({ user: req.user._id });
+    const productIds = products.map((p) => p._id.toString());
+    const ownsProductInOrder = order.orderItems.some((item) =>
+      productIds.includes(item.product.toString())
+    );
+
+    if (!isAdmin && !ownsProductInOrder) {
+      res.status(401);
+      throw new Error('Not authorized to ship this order');
+    }
+
+    order.status = 'Shipped';
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+// @desc    Update order to delivered
+// @route   PUT /api/orders/:id/deliver
+// @access  Private/Admin or User who placed the order or Farmer who owns the products
+const updateOrderToDelivered = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id).populate('user', 'email');
+
+  if (order) {
+    // Check if admin OR owner of the order OR farmer who owns products in the order
+    const isOwner = order.user._id.toString() === req.user._id.toString();
+    const isAdmin = req.user.isAdmin;
+    
+    const products = await Product.find({ user: req.user._id });
+    const productIds = products.map((p) => p._id.toString());
+    const ownsProductInOrder = order.orderItems.some((item) =>
+      productIds.includes(item.product.toString())
+    );
+
+    if (!isOwner && !isAdmin && !ownsProductInOrder) {
+      res.status(401);
+      throw new Error('Not authorized to mark this order as delivered');
+    }
+
     order.isDelivered = true;
     order.deliveredAt = Date.now();
     order.status = 'Delivered';
+
+    // If it's a COD order, marking as delivered also marks as paid
+    if (order.paymentMethod === 'COD') {
+      order.isPaid = true;
+      order.paidAt = Date.now();
+      order.paymentResult = {
+        id: `COD_${Date.now()}`,
+        status: 'Completed',
+        update_time: Date.now().toString(),
+        email_address: order.user.email || 'COD',
+      };
+    }
 
     const updatedOrder = await order.save();
 
@@ -125,7 +181,10 @@ const getMyOrders = asyncHandler(async (req, res) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
+  const orders = await Order.find({})
+    .populate('user', 'id name')
+    .sort({ createdAt: -1 });
+    
   res.json(orders);
 });
 
@@ -145,6 +204,7 @@ export {
   addOrderItems,
   getOrderById,
   updateOrderToPaid,
+  updateOrderToShipped,
   updateOrderToDelivered,
   getMyOrders,
   getOrders,

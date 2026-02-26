@@ -7,8 +7,10 @@ import Loader from '../components/Loader';
 import {
   useGetOrderDetailsQuery,
   usePayOrderMutation,
+  useShipOrderMutation,
   useDeliverOrderMutation,
 } from '../slices/ordersApiSlice';
+import { useGetProductsQuery } from '../slices/productsApiSlice';
 import {
   useGetRazorpayKeyQuery,
   useCreateRazorpayOrderMutation,
@@ -29,6 +31,7 @@ const OrderPage = () => {
   } = useGetOrderDetailsQuery(orderId);
 
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
+  const [shipOrder, { isLoading: loadingShip }] = useShipOrderMutation();
   const [deliverOrder, { isLoading: loadingDeliver }] = useDeliverOrderMutation();
 
   const { data: razorpayKey } = useGetRazorpayKeyQuery();
@@ -36,6 +39,26 @@ const OrderPage = () => {
   const [verifyRazorpayPayment] = useVerifyRazorpayPaymentMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+
+  const { data: userProducts } = useGetProductsQuery({
+    user: userInfo?._id,
+  }, {
+    skip: !userInfo || (!userInfo.isAdmin && !userInfo.isFarmer && !userInfo.isSupplier)
+  });
+
+  const ownsProductInOrder = order?.orderItems?.some((item) =>
+    userProducts?.products?.some((p) => p._id === item.product)
+  );
+
+  const shipHandler = async () => {
+    try {
+      await shipOrder(orderId);
+      refetch();
+      toast.success('Order shipped');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   const deliverHandler = async () => {
     try {
@@ -257,8 +280,34 @@ const OrderPage = () => {
               </button>
             )}
 
-            {/* Admin Deliver Button */}
-            {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+            {/* User Confirm Receipt Button */}
+            {userInfo && !userInfo.isAdmin && order.user._id === userInfo._id && order.status === 'Shipped' && !order.isDelivered && (
+              <button
+                type='button'
+                className='w-full bg-primary-600 text-white py-4 rounded-xl font-bold hover:bg-primary-700 transition-colors mb-4'
+                onClick={deliverHandler}
+                disabled={loadingDeliver}
+              >
+                {loadingDeliver ? <Loader /> : 'Confirm Receipt'}
+              </button>
+            )}
+
+            {/* Ship Button (Admin or Farmer/Supplier who owns products in order) */}
+            {userInfo && (userInfo.isAdmin || userInfo.isFarmer || userInfo.isSupplier) && 
+             ownsProductInOrder && order.status === 'Pending' && (
+              <button
+                type='button'
+                className='w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition-colors mb-4'
+                onClick={shipHandler}
+                disabled={loadingShip}
+              >
+                {loadingShip ? <Loader /> : 'Mark As Shipped'}
+              </button>
+            )}
+
+            {/* Deliver Button (Admin or Farmer/Supplier who owns products in order) */}
+            {userInfo && (userInfo.isAdmin || userInfo.isFarmer || userInfo.isSupplier) && 
+             ownsProductInOrder && !order.isDelivered && (
               <button
                 type='button'
                 className='w-full bg-gray-900 text-white py-4 rounded-xl font-bold hover:bg-gray-800 transition-colors'

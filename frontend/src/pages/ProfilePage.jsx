@@ -366,6 +366,7 @@ const ProfilePage = () => {
                       <th className='pb-4 font-bold text-gray-600 uppercase text-xs tracking-wider'>ID</th>
                       <th className='pb-4 font-bold text-gray-600 uppercase text-xs tracking-wider'>Date</th>
                       <th className='pb-4 font-bold text-gray-600 uppercase text-xs tracking-wider'>Total</th>
+                      <th className='pb-4 font-bold text-gray-600 uppercase text-xs tracking-wider'>Status</th>
                       <th className='pb-4 font-bold text-gray-600 uppercase text-xs tracking-wider'>Paid</th>
                       <th className='pb-4 font-bold text-gray-600 uppercase text-xs tracking-wider'>Delivered</th>
                       <th className='pb-4'></th>
@@ -377,6 +378,16 @@ const ProfilePage = () => {
                         <td className='py-4 font-medium text-gray-900'>{order._id.substring(0, 8)}...</td>
                         <td className='py-4 text-gray-600'>{new Date(order.createdAt).toLocaleString()}</td>
                         <td className='py-4 font-bold text-gray-900'>₹{order.totalPrice}</td>
+                        <td className='py-4'>
+                          <div className={`inline-flex items-center px-2 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider ${
+                            order.status === 'Shipped' ? 'bg-blue-50 text-blue-600' :
+                            order.status === 'Delivered' ? 'bg-green-50 text-green-600' :
+                            order.status === 'Cancelled' ? 'bg-gray-50 text-gray-600' :
+                            'bg-yellow-50 text-yellow-600'
+                          }`}>
+                            {order.status}
+                          </div>
+                        </td>
                         <td className='py-4'>
                           {order.isPaid ? (
                             <div className='flex items-center gap-1 text-green-600 font-bold text-sm'>

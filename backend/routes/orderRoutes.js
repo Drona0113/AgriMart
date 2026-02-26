@@ -4,6 +4,7 @@ import {
   addOrderItems,
   getOrderById,
   updateOrderToPaid,
+  updateOrderToShipped,
   updateOrderToDelivered,
   getMyOrders,
   getOrders,
@@ -16,6 +17,7 @@ router.route('/myorders').get(protect, getMyOrders);
 router.route('/my-sales').get(protect, farmer, getFarmerOrders);
 router.route('/:id').get(protect, getOrderById);
 router.route('/:id/pay').put(protect, updateOrderToPaid);
-router.route('/:id/deliver').put(protect, admin, updateOrderToDelivered);
+router.route('/:id/ship').put(protect, updateOrderToShipped);
+router.route('/:id/deliver').put(protect, updateOrderToDelivered);
 
 export default router;

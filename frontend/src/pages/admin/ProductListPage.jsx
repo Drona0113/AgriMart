@@ -1,5 +1,6 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import {
   useGetProductsQuery,
   useDeleteProductMutation,
@@ -13,6 +14,7 @@ import { Package, Plus, Edit, Trash2, Tag, Box } from 'lucide-react';
 const ProductListPage = () => {
   const { pageNumber } = useParams();
   const navigate = useNavigate();
+  const { userInfo } = useSelector((state) => state.auth);
 
   const { data, isLoading, error, refetch } = useGetProductsQuery({
     pageNumber,
@@ -85,6 +87,7 @@ const ProductListPage = () => {
                 <thead>
                   <tr className='bg-gray-50/50 border-b border-gray-100'>
                     <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Product</th>
+                    <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Seller</th>
                     <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Price</th>
                     <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Category</th>
                     <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Brand</th>
@@ -105,6 +108,10 @@ const ProductListPage = () => {
                             <div className='text-xs text-gray-500 font-medium'>ID: {product._id.substring(0, 10)}</div>
                           </div>
                         </div>
+                      </td>
+                      <td className='px-8 py-6'>
+                        <div className='font-bold text-gray-900'>{product.user ? product.user.name : 'Unknown'}</div>
+                        <div className='text-xs text-gray-500 font-medium'>{product.user ? product.user.email : ''}</div>
                       </td>
                       <td className='px-8 py-6'>
                         <span className='text-lg font-black text-gray-900'>₹{product.price}</span>
@@ -128,18 +135,22 @@ const ProductListPage = () => {
                       </td>
                       <td className='px-8 py-6 text-right'>
                         <div className='flex items-center justify-end gap-2'>
-                          <Link
-                            to={`/admin/product/${product._id}/edit`}
-                            className='p-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-primary-600 hover:text-white transition-all'
-                          >
-                            <Edit size={18} />
-                          </Link>
-                          <button
-                            onClick={() => deleteHandler(product._id)}
-                            className='p-2.5 bg-gray-100 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all'
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                          {(product.user?._id === userInfo._id || product.user === userInfo._id) && (
+                            <>
+                              <Link
+                                to={`/admin/product/${product._id}/edit`}
+                                className='p-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-primary-600 hover:text-white transition-all'
+                              >
+                                <Edit size={18} />
+                              </Link>
+                              <button
+                                onClick={() => deleteHandler(product._id)}
+                                className='p-2.5 bg-gray-100 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all'
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

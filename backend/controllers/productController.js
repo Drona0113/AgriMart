@@ -22,6 +22,7 @@ const getProducts = asyncHandler(async (req, res) => {
 
   const count = await Product.countDocuments({ ...keyword, ...category, ...user });
   const products = await Product.find({ ...keyword, ...category, ...user })
+    .populate('user', 'name email')
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
@@ -49,13 +50,13 @@ const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
-    // Check if user is admin OR the owner of the product
-    if (req.user.isAdmin || product.user.toString() === req.user._id.toString()) {
+    // Restrict deletion to ONLY the owner of the product
+    if (product.user.toString() === req.user._id.toString()) {
       await product.deleteOne();
       res.json({ message: 'Product removed' });
     } else {
       res.status(401);
-      throw new Error('Not authorized to delete this product');
+      throw new Error('Not authorized to delete this product. You can only delete products you added.');
     }
   } else {
     res.status(404);
@@ -100,6 +101,8 @@ const updateProduct = asyncHandler(async (req, res) => {
     price,
     description,
     image,
+    images,
+    videoUrl,
     brand,
     category,
     countInStock,
@@ -111,12 +114,14 @@ const updateProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
-    // Check if user is admin OR the owner of the product
-    if (req.user.isAdmin || product.user.toString() === req.user._id.toString()) {
+    // Restrict editing to ONLY the owner of the product
+    if (product.user.toString() === req.user._id.toString()) {
       product.name = name || product.name;
       product.price = price || product.price;
       product.description = description || product.description;
       product.image = image || product.image;
+      product.images = images || product.images;
+      product.videoUrl = videoUrl !== undefined ? videoUrl : product.videoUrl;
       product.brand = brand || product.brand;
       product.category = category || product.category;
       product.countInStock = countInStock || product.countInStock;
@@ -128,7 +133,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       res.json(updatedProduct);
     } else {
       res.status(401);
-      throw new Error('Not authorized to update this product');
+      throw new Error('Not authorized to update this product. You can only edit products you added.');
     }
   } else {
     res.status(404);
@@ -169,7 +174,7 @@ const createProductReview = asyncHandler(async (req, res) => {
       rating: Number(rating),
       comment,
       user: req.user._id,
-      isVerifiedBuyer: true, // Assuming they bought it if they are reviewing (can be improved)
+      isVerifiedBuyer: true,
     };
 
     product.reviews.push(review);

@@ -35,6 +35,7 @@ const OrderListPage = () => {
                   <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>User</th>
                   <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Date</th>
                   <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Total</th>
+                  <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Status</th>
                   <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Paid</th>
                   <th className='px-8 py-6 font-bold text-gray-600 uppercase text-xs tracking-wider'>Delivered</th>
                   <th className='px-8 py-6'></th>
@@ -55,6 +56,16 @@ const OrderListPage = () => {
                     </td>
                     <td className='px-8 py-6'>
                       <span className='text-lg font-black text-gray-900'>₹{order.totalPrice}</span>
+                    </td>
+                    <td className='px-8 py-6'>
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-sm ${
+                        order.status === 'Shipped' ? 'bg-blue-50 text-blue-600' :
+                        order.status === 'Delivered' ? 'bg-green-50 text-green-600' :
+                        order.status === 'Cancelled' ? 'bg-gray-50 text-gray-600' :
+                        'bg-yellow-50 text-yellow-600'
+                      }`}>
+                        {order.status}
+                      </div>
                     </td>
                     <td className='px-8 py-6'>
                       {order.isPaid ? (
