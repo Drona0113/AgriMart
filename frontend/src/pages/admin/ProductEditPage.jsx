@@ -77,16 +77,21 @@ const ProductEditPage = () => {
   };
 
   const uploadFileHandler = async (e, type = 'main') => {
+    const file = e.target.files[0];
+    if (!file) return;
+
     const formData = new FormData();
-    formData.append('image', e.target.files[0]);
+    formData.append('image', file);
     try {
       const res = await uploadProductImage(formData).unwrap();
       toast.success(res.message);
       if (type === 'main') {
         setImage(res.image);
       } else {
-        setImages([...images, res.image]);
+        setImages((prev) => [...prev, res.image]);
       }
+      // Reset input value
+      e.target.value = '';
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -213,7 +218,7 @@ const ProductEditPage = () => {
                       <label className='flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 py-4 rounded-2xl font-bold cursor-pointer transition-all border-2 border-dashed border-gray-300'>
                         <Upload size={20} />
                         <span>{loadingUpload ? 'Uploading...' : 'Upload Main Image'}</span>
-                        <input type='file' className='hidden' onChange={(e) => uploadFileHandler(e, 'main')} />
+                        <input type='file' className='hidden' onChange={(e) => uploadFileHandler(e, 'main')} accept='image/*' />
                       </label>
                     </div>
                   </div>
@@ -235,11 +240,19 @@ const ProductEditPage = () => {
                         </button>
                       </div>
                     ))}
-                    <label className='aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-primary-300 hover:text-primary-500 hover:bg-primary-50 transition-all cursor-pointer'>
-                      <Plus size={24} />
-                      <span className='text-xs font-bold uppercase tracking-wider'>Add Image</span>
-                      <input type='file' className='hidden' onChange={(e) => uploadFileHandler(e, 'additional')} />
-                    </label>
+                    <div className='aspect-square relative group'>
+                      <input 
+                        type='file' 
+                        className='absolute inset-0 opacity-0 cursor-pointer z-10' 
+                        onChange={(e) => uploadFileHandler(e, 'additional')} 
+                        title="Add Image"
+                        accept='image/*'
+                      />
+                      <div className='w-full h-full rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 group-hover:border-primary-300 group-hover:text-primary-500 group-hover:bg-primary-50 transition-all'>
+                        <Plus size={24} />
+                        <span className='text-xs font-bold uppercase tracking-wider'>Add Image</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

@@ -30,6 +30,31 @@ const ProductPage = () => {
     error,
   } = useGetProductDetailsQuery(productId);
 
+  const getEmbedUrl = (url) => {
+    if (!url) return '';
+    
+    // YouTube
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      let videoId = '';
+      if (url.includes('v=')) {
+        videoId = url.split('v=')[1].split('&')[0];
+      } else if (url.includes('shorts/')) {
+        videoId = url.split('shorts/')[1].split('?')[0];
+      } else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+      }
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Vimeo
+    if (url.includes('vimeo.com')) {
+      const videoId = url.split('/').pop();
+      return `https://player.vimeo.com/video/${videoId}`;
+    }
+
+    return url;
+  };
+
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
 
@@ -100,7 +125,7 @@ const ProductPage = () => {
                 <div className='w-full h-full'>
                   <iframe
                     className='w-full h-full rounded-2xl'
-                    src={product.videoUrl.replace('watch?v=', 'embed/').replace('vimeo.com/', 'player.vimeo.com/video/')}
+                    src={getEmbedUrl(product.videoUrl)}
                     title="Product Video"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

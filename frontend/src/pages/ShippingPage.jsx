@@ -10,13 +10,15 @@ const ShippingPage = () => {
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
 
-  const [address, setAddress] = useState(shippingAddress.address || '');
-  const [city, setCity] = useState(shippingAddress.city || '');
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const [address, setAddress] = useState(shippingAddress.address || userInfo?.address?.street || '');
+  const [city, setCity] = useState(shippingAddress.city || userInfo?.address?.city || '');
+  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || userInfo?.address?.pincode || '');
   const [country, setCountry] = useState(shippingAddress.country || 'India');
-  const [stateName, setStateName] = useState(shippingAddress.state || 'Andhra Pradesh');
+  const [stateName, setStateName] = useState(shippingAddress.state || userInfo?.address?.state || 'Andhra Pradesh');
   const [village, setVillage] = useState(shippingAddress.village || '');
-  const [landmark, setLandmark] = useState(shippingAddress.landmark || '');
+  const [landmark, setLandmark] = useState(shippingAddress.landmark || userInfo?.address?.landmark || '');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
