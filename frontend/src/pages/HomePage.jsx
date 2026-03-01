@@ -24,11 +24,14 @@ const HomePage = () => {
               Grow Better with AgriMart
             </h1>
             <p className='text-lg md:text-xl opacity-90 mb-8'>
-              High-quality seeds, fertilizers, and tools delivered right to your farm. Expert advice at your fingertips.
+              High-quality seeds, fertilizers, fresh produce, and tools delivered right to your farm. Expert advice at your fingertips.
             </p>
             <div className='flex flex-wrap gap-4'>
               <Link to='/search/seeds' className='bg-white text-primary-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors'>
                 Shop Seeds
+              </Link>
+              <Link to='/search/produce' className='bg-white text-primary-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors'>
+                Buy Produce
               </Link>
               <Link to='/knowledge' className='bg-primary-700 text-white px-6 py-3 rounded-full font-bold hover:bg-primary-800 transition-colors'>
                 Expert Tips

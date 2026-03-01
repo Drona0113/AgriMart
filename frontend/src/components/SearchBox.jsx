@@ -23,7 +23,7 @@ const SearchBox = () => {
         name='q'
         onChange={(e) => setKeyword(e.target.value)}
         value={keyword}
-        placeholder='Search seeds, tools, fertilizers...'
+        placeholder='Search seeds, tools, fresh produce...'
         className='w-full px-4 py-2 pl-10 rounded-lg border-2 border-gray-100 focus:border-primary-500 focus:outline-none transition-colors'
       />
       <Search className='absolute left-3 top-2.5 text-gray-400' size={20} />

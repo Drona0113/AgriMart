@@ -20,11 +20,15 @@ const Footer = () => {
 
           <div>
             <h3 className='font-bold text-lg mb-4'>Categories</h3>
-            <ul className='space-y-2 text-gray-600'>
+            <ul className='grid grid-cols-2 gap-x-4 gap-y-2 text-gray-600'>
               <li><Link to='/search/seeds' className='hover:text-primary-600'>Seeds</Link></li>
               <li><Link to='/search/fertilizers' className='hover:text-primary-600'>Fertilizers</Link></li>
               <li><Link to='/search/pesticides' className='hover:text-primary-600'>Pesticides</Link></li>
               <li><Link to='/search/tools' className='hover:text-primary-600'>Farming Tools</Link></li>
+              <li><Link to='/search/fruits' className='hover:text-primary-600'>Fruits & Veg</Link></li>
+              <li><Link to='/search/grains' className='hover:text-primary-600'>Grains & Pulses</Link></li>
+              <li><Link to='/search/machinery' className='hover:text-primary-600'>Machinery</Link></li>
+              <li><Link to='/search/livestock' className='hover:text-primary-600'>Livestock</Link></li>
             </ul>
           </div>
 

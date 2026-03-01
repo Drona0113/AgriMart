@@ -46,7 +46,19 @@ const productSchema = mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ['Seeds', 'Fertilizers', 'Pesticides', 'Farming Tools'],
+      enum: [
+        'Seeds',
+        'Fertilizers',
+        'Pesticides',
+        'Farming Tools',
+        'Fruits & Vegetables',
+        'Grains & Pulses',
+        'Organic Produce',
+        'Livestock & Poultry',
+        'Animal Feed',
+        'Farm Machinery',
+        'Saplings & Nursery'
+      ],
     },
     description: {
       type: String,

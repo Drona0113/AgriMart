@@ -185,6 +185,13 @@ const FarmerProductEditPage = () => {
                     <option value='Fertilizers'>Fertilizers</option>
                     <option value='Pesticides'>Pesticides</option>
                     <option value='Farming Tools'>Farming Tools</option>
+                    <option value='Fruits & Vegetables'>Fruits & Vegetables</option>
+                    <option value='Grains & Pulses'>Grains & Pulses</option>
+                    <option value='Organic Produce'>Organic Produce</option>
+                    <option value='Livestock & Poultry'>Livestock & Poultry</option>
+                    <option value='Animal Feed'>Animal Feed</option>
+                    <option value='Farm Machinery'>Farm Machinery</option>
+                    <option value='Saplings & Nursery'>Saplings & Nursery</option>
                   </select>
                 </div>
 

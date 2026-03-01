@@ -189,14 +189,25 @@ const ProductEditPage = () => {
                 <div>
                   <label className='block text-sm font-bold text-gray-700 mb-2'>Category</label>
                   <div className='relative'>
-                    <Tag className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
-                    <input
-                      type='text'
-                      placeholder='Enter category'
+                    <Tag className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10' size={18} />
+                    <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className='w-full pl-11 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50/30 transition-all'
-                    />
+                      className='w-full pl-11 pr-4 py-4 rounded-2xl border border-gray-200 outline-none focus:border-primary-500 font-medium bg-gray-50/30 transition-all appearance-none'
+                    >
+                      <option value=''>Select Category</option>
+                      <option value='Seeds'>Seeds</option>
+                      <option value='Fertilizers'>Fertilizers</option>
+                      <option value='Pesticides'>Pesticides</option>
+                      <option value='Farming Tools'>Farming Tools</option>
+                      <option value='Fruits & Vegetables'>Fruits & Vegetables</option>
+                      <option value='Grains & Pulses'>Grains & Pulses</option>
+                      <option value='Organic Produce'>Organic Produce</option>
+                      <option value='Livestock & Poultry'>Livestock & Poultry</option>
+                      <option value='Animal Feed'>Animal Feed</option>
+                      <option value='Farm Machinery'>Farm Machinery</option>
+                      <option value='Saplings & Nursery'>Saplings & Nursery</option>
+                    </select>
                   </div>
                 </div>
 
