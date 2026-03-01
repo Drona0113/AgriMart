@@ -6,7 +6,7 @@ import { useRegisterMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
-import { UserPlus, Mail, Lock, User, Phone, Tractor, Store } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, Phone, Tractor, Store, Shield, Key } from 'lucide-react';
 import { 
   INPUT_CLASSES, 
   LABEL_CLASSES,
@@ -24,6 +24,8 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [govtId, setGovtId] = useState('');
   const [isSupplier, setIsSupplier] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminSecret, setAdminSecret] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ const RegisterPage = () => {
       toast.error('Passwords do not match');
     } else {
       try {
-        const res = await register({ name, email, mobile, password, govtId, isSupplier }).unwrap();
+        const res = await register({ name, email, mobile, password, govtId, isSupplier, isAdmin, adminSecret }).unwrap();
         dispatch(setCredentials({ ...res }));
         navigate(redirect);
       } catch (err) {
@@ -62,27 +64,43 @@ const RegisterPage = () => {
       <div className={CARD_CLASSES}>
         <div className='flex flex-col items-center mb-10'>
           <div className={ICON_WRAPPER_CLASSES}>
-            {isSupplier ? <Store size={32} /> : <UserPlus size={32} />}
+            {isAdmin ? <Shield size={32} /> : isSupplier ? <Store size={32} /> : <UserPlus size={32} />}
           </div>
           <h1 className={TITLE_CLASSES}>Create Account</h1>
-          <p className={SUBTITLE_CLASSES}>Join AgriMart as a {isSupplier ? 'Supplier' : 'Farmer/User'}</p>
+          <p className={SUBTITLE_CLASSES}>Join AgriMart as a {isAdmin ? 'Administrator' : isSupplier ? 'Supplier' : 'Farmer/User'}</p>
         </div>
 
         {/* Role Toggle */}
-        <div className="flex bg-gray-100 p-1 rounded-xl mb-8">
+        <div className="flex bg-gray-100 p-1 rounded-xl mb-8 overflow-hidden">
           <button
             type="button"
-            className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${!isSupplier ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-            onClick={() => setIsSupplier(false)}
+            className={`flex-1 py-3 rounded-lg text-xs font-bold transition-all ${!isSupplier && !isAdmin ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => {
+              setIsSupplier(false);
+              setIsAdmin(false);
+            }}
           >
-            Farmer Registration
+            Farmer
           </button>
           <button
             type="button"
-            className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${isSupplier ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-            onClick={() => setIsSupplier(true)}
+            className={`flex-1 py-3 rounded-lg text-xs font-bold transition-all ${isSupplier ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => {
+              setIsSupplier(true);
+              setIsAdmin(false);
+            }}
           >
-            Supplier Registration
+            Supplier
+          </button>
+          <button
+            type="button"
+            className={`flex-1 py-3 rounded-lg text-xs font-bold transition-all ${isAdmin ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => {
+              setIsAdmin(true);
+              setIsSupplier(false);
+            }}
+          >
+            Admin
           </button>
         </div>
 
@@ -113,7 +131,7 @@ const RegisterPage = () => {
               <input
                 type='email'
                 className={INPUT_CLASSES}
-                placeholder='farmer@example.com'
+                placeholder={isSupplier ? 'supplier@example.com' : 'farmer@example.com'}
                 value={email}
                 required
                 onChange={(e) => setEmail(e.target.value)}
@@ -140,26 +158,32 @@ const RegisterPage = () => {
 
           <div>
             <label className={LABEL_CLASSES}>
-              {isSupplier ? 'Supplier GST Shop ID' : 'Farmer ID / Kisan Card'}
+              {isAdmin ? 'Admin Secret Key' : isSupplier ? 'Supplier GST Shop ID' : 'Farmer ID / Kisan Card'}
             </label>
             <div className='relative'>
-              {isSupplier ? (
+              {isAdmin ? (
+                <Key className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
+              ) : isSupplier ? (
                 <Store className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               ) : (
                 <Tractor className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               )}
               <input
-                type='text'
+                type={isAdmin ? 'password' : 'text'}
                 className={INPUT_CLASSES}
-                placeholder={isSupplier ? 'e.g., 22AAAAA0000A1Z5' : 'e.g., KCC1234567890 or AP12345678'}
-                value={govtId}
-                onChange={(e) => setGovtId(e.target.value)}
-                pattern="[A-Za-z0-9]{10,16}"
-                title="ID must be 10-16 alphanumeric characters"
+                placeholder={isAdmin ? 'Enter Admin Secret Key' : isSupplier ? 'e.g., 22AAAAA0000A1Z5' : 'e.g., KCC1234567890 or AP12345678'}
+                value={isAdmin ? adminSecret : govtId}
+                required={isAdmin}
+                onChange={(e) => isAdmin ? setAdminSecret(e.target.value) : setGovtId(e.target.value)}
+                pattern={isAdmin ? undefined : "[A-Za-z0-9]{10,16}"}
+                title={isAdmin ? undefined : "ID must be 10-16 alphanumeric characters"}
               />
             </div>
             <p className='text-xs text-gray-400 mt-2 font-medium ml-2'>
-              * Provide this ID to get verified as a {isSupplier ? 'Supplier' : 'Farmer'} and sell products.
+              {isAdmin 
+                ? '* This key is required to register as a system administrator.'
+                : `* Provide this ID to get verified as a ${isSupplier ? 'Supplier' : 'Farmer'} and sell products.`
+              }
             </p>
           </div>
 
@@ -197,7 +221,7 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          {govtId && (
+          {(govtId || isAdmin) && (
             <div className='flex items-start gap-3 p-4 bg-yellow-50 rounded-xl border border-yellow-100'>
               <input
                 type='checkbox'
@@ -206,7 +230,10 @@ const RegisterPage = () => {
                 className='mt-1 w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500'
               />
               <label htmlFor='consent' className='text-sm text-gray-600 leading-snug'>
-                I hereby consent to providing my {isSupplier ? 'GST Shop ID' : 'Government ID'} for verification purposes only. I understand this information will be securely used by AgriMart solely to validate my {isSupplier ? 'Supplier' : 'Farmer'} status.
+                {isAdmin 
+                  ? 'I understand that as an Administrator, I will have access to manage system users, products, and sensitive data. I agree to maintain the security and confidentiality of this role.'
+                  : `I hereby consent to providing my ${isSupplier ? 'GST Shop ID' : 'Government ID'} for verification purposes only. I understand this information will be securely used by AgriMart solely to validate my ${isSupplier ? 'Supplier' : 'Farmer'} status.`
+                }
               </label>
             </div>
           )}

@@ -37,7 +37,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, mobile, password, govtId, isSupplier } = req.body;
+  const { name, email, mobile, password, govtId, isSupplier, isAdmin, adminSecret } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -46,21 +46,32 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User already exists');
   }
 
-  // Logic:
+  // Logic for Admin registration
+  let isAdminRole = false;
+  if (isAdmin) {
+    if (adminSecret !== process.env.ADMIN_SECRET_KEY) {
+      res.status(401);
+      throw new Error('Invalid Admin Secret Key');
+    }
+    isAdminRole = true;
+  }
+
+  // Logic for Farmer/Supplier/User
   // If isSupplier is true, mark as supplier.
   // Else if govtId is provided, mark as farmer.
   // Else regular user.
   
-  const isFarmerRole = !isSupplier && govtId ? true : false;
-  const isSupplierRole = isSupplier ? true : false;
-  const isVerified = false; 
+  const isFarmerRole = !isSupplier && !isAdminRole && govtId ? true : false;
+  const isSupplierRole = isSupplier && !isAdminRole ? true : false;
+  const isVerified = isAdminRole ? true : false; // Admins are auto-verified 
 
   const user = await User.create({
     name,
     email,
     mobile,
     password,
-    govtId,
+    govtId: isAdminRole ? null : govtId,
+    isAdmin: isAdminRole,
     isFarmer: isFarmerRole,
     isSupplier: isSupplierRole,
     isVerified
