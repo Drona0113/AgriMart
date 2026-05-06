@@ -30,7 +30,7 @@ jobs:
           RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
           ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
         # Changed from server.js to index.js to match your repo
-        run: node index.js --version || echo "Server checked"
+        run: timeout 10s node index.js || [ $? -eq 124 ]
 
   frontend-check:
     runs-on: ubuntu-latest
