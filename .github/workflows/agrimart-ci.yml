@@ -1,0 +1,44 @@
+name: AgriMart Fullstack Check
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  backend-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Backend Dependencies
+        # CRITICAL: This tells the robot to go inside the backend folder
+        working-directory: ./backend 
+        run: npm install
+
+      - name: Verify Backend Security
+        working-directory: ./backend
+        env:
+          # Mapping your 6 secrets to the backend environment
+          MONGO_URL: ${{ secrets.MONGO_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
+          RAZORPAY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+        # This checks if the backend starts without crashing
+        run: node server.js --version 
+
+  frontend-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
