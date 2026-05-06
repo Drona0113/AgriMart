@@ -16,21 +16,21 @@ jobs:
           node-version: '20'
 
       - name: Install Backend Dependencies
-        # CRITICAL: This tells the robot to go inside the backend folder
         working-directory: ./backend 
         run: npm install
 
       - name: Verify Backend Security
         working-directory: ./backend
         env:
-          # Mapping your 6 secrets to the backend environment
+          # These names must match your GitHub Secrets exactly!
           MONGO_URL: ${{ secrets.MONGO_URL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
           RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
-          RAZORPAY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
+          RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
           ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
-        # This checks if the backend starts without crashing
-        run: node server.js --version 
+        # Changed from server.js to index.js to match your repo
+        run: node index.js --version 
 
   frontend-check:
     runs-on: ubuntu-latest
@@ -38,7 +38,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Frontend Dependencies
         working-directory: ./frontend
-        run: npm install
+        # Added the flag to skip version conflicts
+        run: npm install --legacy-peer-deps
       - name: Build Frontend
         working-directory: ./frontend
         run: npm run build
