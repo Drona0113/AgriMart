@@ -8,7 +8,7 @@ import { useProfileMutation } from '../slices/usersApiSlice';
 import { useUploadProductImageMutation } from '../slices/productsApiSlice';
 import { useGetMyOrdersQuery } from '../slices/ordersApiSlice';
 import { setCredentials } from '../slices/authSlice';
-import { User, Mail, Lock, ShoppingBag, ArrowRight, XCircle, CheckCircle, Phone, MapPin, Upload, Camera, Trash2, Edit2, Eye, X } from 'lucide-react';
+import { User, Mail, Lock, ShoppingBag, ArrowRight, XCircle, CheckCircle, Phone, MapPin, Upload, Camera, Trash2, Edit2, Eye, EyeOff, X } from 'lucide-react';
 
 const ProfilePage = () => {
   const [name, setName] = useState('');
@@ -25,6 +25,8 @@ const ProfilePage = () => {
     landmark: ''
   });
   const [showImagePreview, setShowImagePreview] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -306,12 +308,19 @@ const ProfilePage = () => {
                 <div className='relative'>
                   <Lock className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
                   <input
-                    type='password'
-                    className='w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
+                    type={showPassword ? 'text' : 'password'}
+                    className='w-full pl-11 pr-11 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
                     placeholder='Enter new password'
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <button
+                    type='button'
+                    className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors'
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
 
@@ -322,12 +331,19 @@ const ProfilePage = () => {
                 <div className='relative'>
                   <Lock className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
                   <input
-                    type='password'
-                    className='w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    className='w-full pl-11 pr-11 py-3 rounded-xl border border-gray-200 outline-none focus:border-primary-500 font-medium'
                     placeholder='Confirm new password'
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
+                  <button
+                    type='button'
+                    className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors'
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
 

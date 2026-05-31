@@ -16,6 +16,7 @@ import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ShippingPage from './pages/ShippingPage';
 import PaymentPage from './pages/PaymentPage';
 import PlaceOrderPage from './pages/PlaceOrderPage';
@@ -52,6 +53,7 @@ const router = createBrowserRouter(
       <Route path='/cart' element={<CartPage />} />
       <Route path='/login' element={<LoginPage />} />
       <Route path='/register' element={<RegisterPage />} />
+      <Route path='/forgot-password' element={<ForgotPasswordPage />} />
       <Route path='/knowledge' element={<KnowledgeHubPage />} />
       <Route path='/knowledge/:id' element={<KnowledgeDetailsPage />} />
 

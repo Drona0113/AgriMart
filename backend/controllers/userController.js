@@ -287,6 +287,40 @@ const getAuditLogs = asyncHandler(async (req, res) => {
   res.json(logs);
 });
 
+// @desc    Forgot password - Validate user
+// @route   POST /api/users/forgot-password
+// @access  Public
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email, mobile } = req.body;
+
+  const user = await User.findOne({ email, mobile });
+
+  if (user) {
+    res.json({ message: 'User validated. You can now reset your password.' });
+  } else {
+    res.status(404);
+    throw new Error('User not found with these details');
+  }
+});
+
+// @desc    Reset password
+// @route   POST /api/users/reset-password
+// @access  Public
+const resetPassword = asyncHandler(async (req, res) => {
+  const { email, mobile, password } = req.body;
+
+  const user = await User.findOne({ email, mobile });
+
+  if (user) {
+    user.password = password;
+    await user.save();
+    res.json({ message: 'Password reset successful' });
+  } else {
+    res.status(404);
+    throw new Error('User not found or details mismatch');
+  }
+});
+
 export {
   authUser,
   registerUser,
@@ -298,4 +332,6 @@ export {
   updateUser,
   unmaskUserField,
   getAuditLogs,
+  forgotPassword,
+  resetPassword,
 };

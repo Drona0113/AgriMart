@@ -71,6 +71,20 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    forgotPassword: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/forgot-password`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/reset-password`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -85,4 +99,6 @@ export const {
   useUpdateUserMutation,
   useUnmaskUserMutation,
   useGetAuditLogsQuery,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = usersApiSlice;

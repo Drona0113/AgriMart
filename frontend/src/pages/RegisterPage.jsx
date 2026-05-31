@@ -6,7 +6,7 @@ import { useRegisterMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
-import { UserPlus, Mail, Lock, User, Phone, Tractor, Store, Shield, Key } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, Phone, Tractor, Store, Shield, Key, Eye, EyeOff } from 'lucide-react';
 import { 
   INPUT_CLASSES, 
   LABEL_CLASSES,
@@ -26,6 +26,8 @@ const RegisterPage = () => {
   const [isSupplier, setIsSupplier] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminSecret, setAdminSecret] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -194,13 +196,20 @@ const RegisterPage = () => {
             <div className='relative'>
               <Lock className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
-                type='password'
-                className={INPUT_CLASSES}
+                type={showPassword ? 'text' : 'password'}
+                className={`${INPUT_CLASSES} pr-12`}
                 placeholder='Enter your password'
                 value={password}
                 required
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type='button'
+                className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors'
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
           </div>
 
@@ -211,13 +220,20 @@ const RegisterPage = () => {
             <div className='relative'>
               <Lock className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400' size={20} />
               <input
-                type='password'
-                className={INPUT_CLASSES}
+                type={showConfirmPassword ? 'text' : 'password'}
+                className={`${INPUT_CLASSES} pr-12`}
                 placeholder='Confirm your password'
                 value={confirmPassword}
                 required
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
+              <button
+                type='button'
+                className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors'
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
           </div>
 
