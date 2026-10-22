@@ -19,19 +19,19 @@ And because this is built for *rural* India, the whole thing works in **6 langua
 ## 📸 Screenshots
 
 ### 🏠 Home — Latest Products
-![Home Page](./backend/uploads/screenshot_home.png)
+![Home Page](./backend/src/uploads/screenshot_home.png)
 
 ### 🧑‍🌾 Farmer Dashboard — My Shop
-![Farmer Shop](./backend/uploads/screenshot_farmer_shop.png)
+![Farmer Shop](./backend/src/uploads/screenshot_farmer_shop.png)
 
 ### 📦 Farmer Orders
-![Farmer Orders](./backend/uploads/screenshot_farmer_orders.png)
+![Farmer Orders](./backend/src/uploads/screenshot_farmer_orders.png)
 
 ### 🔧 Admin — Orders Management
-![Admin Orders](./backend/uploads/screenshot_admin_orders.png)
+![Admin Orders](./backend/src/uploads/screenshot_admin_orders.png)
 
 ### 👥 Admin — User Management
-![Admin Users](./backend/uploads/screenshot_admin_users.png)
+![Admin Users](./backend/src/uploads/screenshot_admin_users.png)
 
 ---
 
@@ -70,35 +70,58 @@ Admins get a full control panel — manage users, products, and orders in real t
 
 ## 📁 Project Structure
 
-```
+```text
 AgriMart/
 ├── .github/
 │   └── workflows/
 │       └── agrimart-ci.yml
+│
 ├── backend/
-│   ├── config/
-│   ├── controllers/
-│   ├── data/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── uploads/
-│   ├── utils/
-│   ├── index.js
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── data/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── uploads/
+│   │   ├── utils/
+│   │   └── app.js
+│   ├── .env
 │   ├── seeder.js
+│   ├── server.js
 │   └── package.json
+│
 ├── frontend/
 │   ├── public/
 │   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   │   ├── admin/
+│   │   │   └── farmer/
+│   │   ├── slices/
+│   │   ├── store/
+│   │   ├── utils/
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── constants.js
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .gitignore
+│   ├── eslint.config.js
 │   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.js
 │   ├── tailwind.config.js
-│   ├── vite.config.js
-│   └── package.json
+│   └── vite.config.js
+│
 ├── .gitignore
 └── README.md
 ```
 
----
+
 
 ## 🚀 Running It Locally
 
