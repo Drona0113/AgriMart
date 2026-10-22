@@ -30,8 +30,8 @@ jobs:
           RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
           RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
           ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
-        # Changed from server.js to index.js to match your repo
-        run: timeout 10s node index.js || [ $? -eq 124 ]
+        # Changed from server.js to server.js to match your repo
+        run: timeout 10s node server.js || [ $? -eq 124 ]
 
   frontend-check:
     runs-on: ubuntu-latest

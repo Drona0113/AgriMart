@@ -5,14 +5,14 @@ import dotenv from 'dotenv';
 const __dirname = path.resolve();
 dotenv.config();
 
-import users from './data/users.js';
-import products from './data/products.js';
-import knowledgePosts from './data/knowledge.js';
-import User from './models/userModel.js';
-import Product from './models/productModel.js';
-import Order from './models/orderModel.js';
-import Knowledge from './models/knowledgeModel.js';
-import connectDB from './config/db.js';
+import users from './src/data/users.js';
+import products from './src/data/products.js';
+import knowledgePosts from './src/data/knowledge.js';
+import User from './src/models/userModel.js';
+import Product from './src/models/productModel.js';
+import Order from './src/models/orderModel.js';
+import Knowledge from './src/models/knowledgeModel.js';
+import connectDB from './src/config/db.js';
 
 const importData = async () => {
   try {
