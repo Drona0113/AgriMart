@@ -61,7 +61,44 @@ const getOrderById = asyncHandler(async (req, res) => {
   );
 
   if (order) {
-    res.json(order);
+    const productIds = order.orderItems.map((item) => item.product);
+    await order.populate({
+      path: 'orderItems.product',
+      select: 'user',
+      populate: {
+        path: 'user',
+        select: 'name email mobile',
+      },
+    });
+
+    const userId = req.user._id.toString();
+    const isOrderBuyer = order.user?._id?.toString() === userId;
+    const ownsProductInOrder = order.orderItems.some(
+      (item) => item.product?.user?._id?.toString() === userId
+    );
+
+    if (!req.user.isAdmin && !isOrderBuyer && !ownsProductInOrder) {
+      res.status(403);
+      throw new Error('Not authorized to view this order');
+    }
+
+    const orderItems = order.orderItems.map((item, index) => {
+      const seller = item.product?.user;
+
+      return {
+        ...item.toObject(),
+        product: productIds[index],
+        seller: seller
+          ? {
+              name: seller.name,
+              email: seller.email,
+              mobile: seller.mobile,
+            }
+          : null,
+      };
+    });
+
+    res.json({ ...order.toObject(), orderItems });
   } else {
     res.status(404);
     throw new Error('Order not found');

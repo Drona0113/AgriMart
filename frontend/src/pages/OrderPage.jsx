@@ -235,6 +235,26 @@ const OrderPage = () => {
                       {item.name}
                     </Link>
                     <p className='text-sm text-gray-500 font-medium'>{item.qty} x ₹{item.price}</p>
+                    <div className='mt-2 text-sm text-gray-600'>
+                      <p className='font-bold text-gray-700'>Seller Details</p>
+                      <p>{item.seller?.name || 'Seller information unavailable'}</p>
+                      {item.seller?.mobile && (
+                        <p>
+                          Phone:{' '}
+                          <a className='font-medium text-primary-700 hover:underline' href={`tel:${item.seller.mobile}`}>
+                            {item.seller.mobile}
+                          </a>
+                        </p>
+                      )}
+                      {item.seller?.email && (
+                        <p>
+                          Email:{' '}
+                          <a className='font-medium text-primary-700 hover:underline' href={`mailto:${item.seller.email}`}>
+                            {item.seller.email}
+                          </a>
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div className='font-bold text-gray-900 text-lg'>
                     ₹{(item.qty * item.price).toFixed(2)}
